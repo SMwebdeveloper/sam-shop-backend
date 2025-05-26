@@ -13,7 +13,7 @@ class AuthService {
 
         const hashPassword = await bcrypt.hash(password, 10)
         const user = await userModel.create({username, email, password: hashPassword, role})
-        const userDto = await UserDto(user)
+        const userDto = new UserDto(user)
         return {userDto}
     }
 }
