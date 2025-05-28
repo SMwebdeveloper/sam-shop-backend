@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const userModel = require("../models/user.model")
 const BaseError = require("../errors/base.error")
 const UserDto = require("../dtos/user.dto")
-
+const mailService = require("./mail.service")
 class AuthService {
     async register(userData) {
         const {username, email, password, role} = userData
@@ -14,8 +14,11 @@ class AuthService {
         const hashPassword = await bcrypt.hash(password, 10)
         const user = await userModel.create({username, email, password: hashPassword, role})
         const userDto = new UserDto(user)
-        return {userDto}
+        await mailService.sendOtp(userDto.email)
+        return {user:userDto}
     }
+
+    async verfiyEmail() {}
 }
 
 module.exports = new AuthService()
