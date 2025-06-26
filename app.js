@@ -1,13 +1,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const authRoute = require("./routes/auth.route")
+const authRoute = require("./routes/auth.route");
+const errorMiddleware = require("./middlewares/error.middleware");
 require("dotenv").config();
 
 const app = express();
 
 app.use(express.json());
 
+// routes
 app.use('/api/auth', authRoute)
+
+app.use(errorMiddleware)
 
 const PORT = process.env.PORT || 9090;
 

@@ -17,8 +17,6 @@ class AuthService {
         await mailService.sendOtp(userDto.email)
         return {user:userDto}
     }
-
-    async verfiyEmail() {}
 }
 
 module.exports = new AuthService()
