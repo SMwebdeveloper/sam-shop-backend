@@ -18,8 +18,8 @@ class MailService {
 
   async sendOtp(to) {
     const otp = Math.floor(100000 + Math.random() * 900000);
-   console.log("email", to)
-   console.log("otp", otp)
+  //  console.log("email", to)
+  //  console.log("otp", otp)
     const hashedOtp = await bcrypt.hash(otp.toString(), 10);
     await otpModel.create({
       email: to,

@@ -1,13 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const authRoute = require("./routes/auth.route");
+const cookieParser = require("cookie-parser")
 const errorMiddleware = require("./middlewares/error.middleware");
 require("dotenv").config();
 
 const app = express();
 
 app.use(express.json());
-
+app.use(cookieParser())
 // routes
 app.use('/api/auth', authRoute)
 
