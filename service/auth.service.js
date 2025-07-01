@@ -67,24 +67,44 @@ class AuthService {
       email,
       `http://localhost:5173/recovery-account/${tokens.accessToken}`
     );
-    console.log("token",tokens.accessToken)
-    console.log("email", email)
     return 200;
   }
-  async recoveryAccount (token, password) {
-    if(!token) {
-      return BaseError.BadRequest("Something went wrong with token")
+  async recoveryAccount(token, password) {
+    if (!token) {
+      return BaseError.BadRequest("Something went wrong with token");
     }
-    const userData = await tokenService.validateAccessToken(token)
+    const userData = await tokenService.validateAccessToken(token);
 
     if (!userData) {
-      return BaseError.BadRequest("Expired access to your account")
+      return BaseError.BadRequest("Expired access to your account");
     }
 
-    const hashPassword = await bcrypt.hash(password, 10)
+    const hashPassword = await bcrypt.hash(password, 10);
 
-    await userModel.findByIdAndUpdate(userData.id, {password: hashPassword})
-    return 200
+    await userModel.findByIdAndUpdate(userData.id, { password: hashPassword });
+    return 200;
+  }
+
+  async refresh(refreshToken) {
+    if(!refreshToken) {
+      return BaseError.UnAuthorizedError("Bad authorization")
+    }
+
+    const userPayload = tokenService.validateRefreshToken(refreshToken)
+    const tokenDB = await tokenService.findToken(refreshToken)
+
+    if(!userPayload || !tokenDB) {
+      return BaseError.UnAuthorizedError("Bad authorization")
+    }
+
+    const user = await userModel.findById(userPayload.id)
+    const userDto = new UserDto(user)
+
+    const tokens = tokenService.generateToken({...userDto})
+
+    await tokenService.save(userDto.id, tokens.refreshToken)
+
+    return {user: userDto, ...tokens}
   }
 }
 

@@ -17,5 +17,6 @@ router.post("/verify", authController.verifyEmail)
 router.post("/login", authController.login)
 router.post("/logout", authController.logout)
 router.post("/reset-password", authController.resetPassword);
-router.post("/recovery-account", authController.recoveryAccount)
+router.put("/recovery-account", authController.recoveryAccount)
+router.get("/refresh", authController.refresh)
 module.exports = router;

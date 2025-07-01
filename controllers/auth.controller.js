@@ -81,14 +81,19 @@ class AuthControl {
       next(error)
     }
   }
-  // async refreshToken (req, res, next) {
-  //   try {
-  //     const {refreshToken} = req.cookies
-
-  //   } catch (error) {
-  //     next(error)
-  //   }
-  // }
+  async refresh (req, res, next) {
+    try {
+      const {refreshToken} = req.cookies
+      const data = await authService.refresh(refreshToken)
+      res.cookie("refreshToken", data.refreshToken, {
+        httpOnly: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      });
+      return res.json(data)
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 module.exports = new AuthControl();
