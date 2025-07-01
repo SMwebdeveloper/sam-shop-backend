@@ -18,8 +18,6 @@ class MailService {
 
   async sendOtp(to) {
     const otp = Math.floor(100000 + Math.random() * 900000);
-  //  console.log("email", to)
-  //  console.log("otp", otp)
     const hashedOtp = await bcrypt.hash(otp.toString(), 10);
     await otpModel.create({
       email: to,
@@ -50,6 +48,23 @@ class MailService {
 
     await otpModel.deleteMany({ email });
     return true;
+  }
+  async sendForgotPassword(email, activationLink) {
+    try {
+      await this.transporter.sendMail({
+        from: "samandarmirzarahmonov@gmail.com",
+        to: email,
+        subject: `Forgot password`,
+        html: `
+        <div>
+            <h1>Time to hacking. If you want to recover your account just click the link below.</h1>
+            <a href="${activationLink}">Link to recovercy account</a>
+            <b>This link work 15 minuts during</b>
+        `,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 

@@ -56,20 +56,39 @@ class AuthControl {
     try {
       const { refreshToken } = req.cookies;
       const token = await tokenService.removeToken(refreshToken);
-      res.clearCookie('refreshToken')
-      res.status(200).json({token});
+      res.clearCookie("refreshToken");
+      res.status(200).json({ token });
     } catch (error) {
       next(error);
     }
   }
-  async refreshToken (req, res, next) {
+  async resetPassword(req, res, next) {
     try {
-      const {refreshToken} = req.cookies
-            
+      const { email } = req.body;
+      await authService.resetPassword(email);
+      return res.json({ success: true });
+  } catch (error) {
+      next(error);
+    }
+  }
+
+  async recoveryAccount (req, res, next) {
+    try {
+      const {token, password} = req.body
+      await authService.recoveryAccount(token, password)
+      return res.json({success: true})
     } catch (error) {
       next(error)
     }
   }
+  // async refreshToken (req, res, next) {
+  //   try {
+  //     const {refreshToken} = req.cookies
+
+  //   } catch (error) {
+  //     next(error)
+  //   }
+  // }
 }
 
 module.exports = new AuthControl();

@@ -49,6 +49,43 @@ class AuthService {
   async logout(refreshToken) {
     await tokenService.removeToken(refreshToken);
   }
+
+  async resetPassword(email) {
+    if (!email) {
+      return BaseError.BadRequest("Email is required");
+    }
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return BaseError.BadRequest("User with is existing email is not found");
+    }
+
+    const userDto = new UserDto(user);
+
+    const tokens = tokenService.generateToken({ ...userDto });
+    await mailService.sendForgotPassword(
+      email,
+      `http://localhost:5173/recovery-account/${tokens.accessToken}`
+    );
+    console.log("token",tokens.accessToken)
+    console.log("email", email)
+    return 200;
+  }
+  async recoveryAccount (token, password) {
+    if(!token) {
+      return BaseError.BadRequest("Something went wrong with token")
+    }
+    const userData = await tokenService.validateAccessToken(token)
+
+    if (!userData) {
+      return BaseError.BadRequest("Expired access to your account")
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10)
+
+    await userModel.findByIdAndUpdate(userData.id, {password: hashPassword})
+    return 200
+  }
 }
 
 module.exports = new AuthService();

@@ -27,6 +27,20 @@ class TokenService {
   async findToken(refreshToken) {
     return await tokenModel.findOne({ refreshToken });
   }
+  validateRefreshToken(token) {
+    try {
+      return jwt.verify(token, process.env.JWT_REFRESH_KEY)      
+    } catch (error) {
+      return null
+    }
+  }
+  validateAccessToken(token) {
+    try {
+      return jwt.verify(token, process.env.JWT_ACCESS_KEY)      
+    } catch (error) {
+      return null
+    }
+  }
 }
 
 module.exports = new TokenService();
