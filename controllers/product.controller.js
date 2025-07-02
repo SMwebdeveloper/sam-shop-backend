@@ -25,7 +25,27 @@ class ProductController {
     try {
       const { id } = req.params;
       const product = await productService.productById(id);
-      res.status(200).json(product)
+      res.status(200).json(product);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async update(req, res, next) {
+    try {
+      const {id} = req.params
+      const product = req.body;
+      const updateProduct = await productService.update(product, id);
+      return res.status(200).json(updateProduct);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async delete(req, res, next) {
+    try {
+      const { id } = req.params;
+      await productService.delete(id);
+      return res.status(500).json({ success: true });
     } catch (error) {
       next(error);
     }
