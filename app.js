@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const authRoute = require("./routes/auth.route");
 const productRoute = require("./routes/product.route")
 const cookieParser = require("cookie-parser")
+const fileupload = require("express-fileupload")
 const errorMiddleware = require("./middlewares/error.middleware");
 require("dotenv").config();
 
@@ -10,6 +11,8 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser())
+app.use(express.static("static"))
+app.use(fileupload())
 // routes
 app.use('/api/auth', authRoute)
 app.use("/api/product", productRoute)
