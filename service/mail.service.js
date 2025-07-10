@@ -24,7 +24,6 @@ class MailService {
       otp: hashedOtp,
       expireAt: new Date(Date.now() + 5 * 60 * 1000),
     });
-
     await this.transporter.sendMail({
       from: "samandarmirzarahmonov@gmail.com",
       to,

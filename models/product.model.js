@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 
+// product schema
 const ProductSchema = new Schema(
   {
     name: { type: String, required: true },
@@ -11,32 +12,49 @@ const ProductSchema = new Schema(
       required: true,
       enum: ["clothing", "electronics", "other"],
     },
+    sold_count: { type: Number },
+    isActive: { type: Boolean, required: true },
     second_category: { type: String, required: true },
     brand: { type: String },
     images: [String],
+    ratings: [
+      {
+        userId: { type: Schema.ObjectId, ref: "User" },
+        rating: { type: Number, min: 1, max: 5 },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+    averageRating: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true, discriminatorKey: "productType" }
 );
 
+//  clothing product schema
 const clothingProductSchema = new Schema({
   size: [
     {
-      sizeValue: String,
-      quality: Number,
+      sizeValue: { type: String },
+      quality: { type: Number },
+      _id: false,
     },
   ],
-  colors: [{ colorName: String, quality: Number }],
+  colors: [
+    { colorName: { type: String }, quality: { type: Number }, _id: false },
+  ],
   material: { type: String },
 });
 
+// electronicsProductSchema
 const electronicsProductSchema = new Schema({
   storage: [String],
   ram: [String],
   processor: { type: String },
   screenSize: [String],
   batteryCapacity: { type: String },
-  colors: [String],
+  colors: [
+    { colorName: { type: String }, quality: { type: Number }, _id: false },
+  ],
 });
 const Product = model("Product", ProductSchema);
 

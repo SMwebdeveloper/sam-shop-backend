@@ -3,6 +3,8 @@ const {
   ClothingProduct,
   ElectronicsProduct,
 } = require("../models/product.model");
+const fileService = require("./file.service");
+const BaseError = require("../errors/base.error");
 
 class ProductService {
   async getAllProducts() {
@@ -10,17 +12,21 @@ class ProductService {
     return products;
   }
 
-  async createProduct(data) {
+  async createProduct(data, pictures) {
     let newProduct;
+    const allPictures = pictures.map((picture) => {
+      return fileService.save(picture);
+    });
+    const allData = { ...data, images: allPictures };
     switch (data.category) {
       case "clothing":
-        newProduct = await ClothingProduct.create(data);
+        newProduct = await ClothingProduct.create(allData);
         break;
       case "electronics":
-        newProduct = await ElectronicsProduct.create(data)
+        newProduct = await ElectronicsProduct.create(allData);
         break;
       default:
-        newProduct = await Product.create(data);
+        newProduct = await Product.create(allData);
     }
     return newProduct;
   }
@@ -32,13 +38,13 @@ class ProductService {
 
   async update(data, id) {
     if (!id) {
-      throw new Error("Id not found");
+      throw  BaseError.BadRequest("Id not found");
     }
 
     const isProduct = await this.productById(id);
 
     if (!isProduct) {
-      throw new Error("Product not found");
+      throw BaseError.BadRequest("Product not found");
     }
 
     const updateProduct = await Product.findByIdAndUpdate(id, data, {
@@ -49,6 +55,49 @@ class ProductService {
 
   async delete(id) {
     return await Product.findByIdAndDelete(id);
+  }
+
+  async addRating(productId, userId, rating) {
+    if (!userId) {
+      throw BaseError.UnAuthorizedError();
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw BaseError.BadRequest("Product not found");
+    }
+
+    // exist user
+    const existingRating = product.ratings.find(
+      (r) => r.userId.toString() === userId
+    );
+    if (existingRating) {
+      throw BaseError.BadRequest("You have already rated this product");
+    }
+    const updatedProduct = await Product.findOneAndUpdate(
+      { _id: productId },
+      {
+        $push: {
+          ratings: { userId, rating },
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      throw BaseError.BadRequest("Product not found");
+    }
+
+    // calculate average rating
+    const totalRating = updatedProduct.ratings.length;
+    const sumRating = updatedProduct.ratings.reduce(
+      (sum, r) => sum + r.rating,
+      0
+    );
+    const averageRating = sumRating / totalRating;
+    // Faqat averageRating ni yangilash
+    await Product.updateOne({ _id: productId }, { $set: { averageRating } });
+    return true;
   }
 }
 

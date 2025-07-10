@@ -13,7 +13,11 @@ class ProductController {
   async create(req, res, next) {
     try {
       const productData = req.body;
-      const newProduct = await productService.createProduct(productData);
+      const pictures = req.files.images;
+      const newProduct = await productService.createProduct(
+        productData,
+        pictures
+      );
       return res.status(201).json(newProduct);
     } catch (error) {
       console.log(error);
@@ -33,7 +37,7 @@ class ProductController {
 
   async update(req, res, next) {
     try {
-      const {id} = req.params
+      const { id } = req.params;
       const product = req.body;
       const updateProduct = await productService.update(product, id);
       return res.status(200).json(updateProduct);
@@ -46,6 +50,17 @@ class ProductController {
       const { id } = req.params;
       await productService.delete(id);
       return res.status(500).json({ success: true });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async addProductRating(req, res, next) {
+    try {
+      const {userId, rating } = req.body;
+      const {id} = req.params
+      await productService.addRating(id, userId, rating);
+      res.status(201).json({success: true});
     } catch (error) {
       next(error);
     }
