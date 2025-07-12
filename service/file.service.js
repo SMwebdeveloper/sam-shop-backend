@@ -30,7 +30,7 @@ class FileService {
 
       // Faylni saqlash
       file.mv(filePath);
-      return fileName;
+      return { image: `http://localhost:${process.env.PORT}/${fileName}` };
     } catch (error) {
       throw new Error(`Error saving file: ${error}`);
     }

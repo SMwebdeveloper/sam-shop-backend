@@ -14,8 +14,9 @@ class ProductService {
 
   async createProduct(data, pictures) {
     let newProduct;
+    console.log(pictures)
     const allPictures = pictures.map((picture) => {
-      return fileService.save(picture);
+      return {image: fileService.save(picture.image), ...picture}
     });
     const allData = { ...data, images: allPictures };
     switch (data.category) {

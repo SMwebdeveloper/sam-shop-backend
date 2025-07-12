@@ -16,12 +16,19 @@ const ProductSchema = new Schema(
     isActive: { type: Boolean, required: true },
     second_category: { type: String, required: true },
     brand: { type: String },
-    images: [String],
+    images: [
+      // {
+      //   image: { type: String, required: true },
+      //   first: { type: Boolean, default: false },
+      // },
+      String
+    ],
     ratings: [
       {
         userId: { type: Schema.ObjectId, ref: "User" },
         rating: { type: Number, min: 1, max: 5 },
         createdAt: { type: Date, default: Date.now },
+        _id: false,
       },
     ],
     averageRating: { type: Number, default: 0 },
