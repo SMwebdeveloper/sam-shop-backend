@@ -3,13 +3,13 @@ const productService = require("../service/product.service");
 class ProductController {
   async getAllProducts(req, res, next) {
     try {
-      const products = await productService.getAllProducts();
+      const products = await productService.getAllProducts(req.query);
       res.status(200).json(products);
     } catch (error) {
       next(error);
     }
   }
-
+  
   async create(req, res, next) {
     try {
       const productData = req.body;

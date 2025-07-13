@@ -6,9 +6,53 @@ const {
 const BaseError = require("../errors/base.error");
 
 class ProductService {
-  async getAllProducts() {
-    const products = await Product.find();
-    return products;
+  async getAllProducts(queryParamter) {
+    // pagination parametr
+    const page = parseInt(queryParamter.page);
+    const limit = parseInt(queryParamter.limit);
+    const skip = (page - 1) * limit;
+
+    // sort and filter
+    const sort = queryParamter.sort || "-createdAt";
+    const category = queryParamter.category;
+    const secondCategory = queryParamter.secondCategory;
+    const search = queryParamter.search;
+    let query = {};
+    if (category) {
+      query.category = category;
+    }
+
+    if(secondCategory) {
+      query.second_category = secondCategory
+    }
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    } // Ma'lumotlarni olish
+    const products = await Product.find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Umumiy mahsulotlar soni
+    const total = await Product.countDocuments(query);
+    const totalPages = Math.ceil(total / limit);
+
+    return{
+      success: true,
+      data: products,
+      pagination: {
+        total,
+        totalPages,
+        currentPage: page,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    }
   }
 
   async createProduct(data) {
@@ -34,7 +78,7 @@ class ProductService {
 
   async update(data, id) {
     if (!id) {
-      throw  BaseError.BadRequest("Id not found");
+      throw BaseError.BadRequest("Id not found");
     }
 
     const isProduct = await this.productById(id);
