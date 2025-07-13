@@ -7,9 +7,9 @@ class FileService {
     try {
       // Fayl kengaytmasini olish
       const fileExtension = path.extname(file.name);
-      const validExtensions = [".jpg", ".jpeg", ".png", ".gif"]; // Qo'llab-quvvatlanadigan kengaytmalar
+      const validExtensions = [".jpg", ".jpeg", ".png", ".gif"]; 
 
-      // Agar kengaytma valid bo'lmasa, xato tashlaymiz
+      // validate error 
       if (!validExtensions.includes(fileExtension.toLowerCase())) {
         throw new Error(
           `Invalid file type: ${fileExtension}. Only ${validExtensions.join(

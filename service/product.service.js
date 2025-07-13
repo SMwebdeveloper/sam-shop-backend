@@ -3,7 +3,6 @@ const {
   ClothingProduct,
   ElectronicsProduct,
 } = require("../models/product.model");
-const fileService = require("./file.service");
 const BaseError = require("../errors/base.error");
 
 class ProductService {
@@ -12,12 +11,8 @@ class ProductService {
     return products;
   }
 
-  async createProduct(data, pictures) {
+  async createProduct(data) {
     let newProduct;
-    console.log(pictures)
-    const allPictures = pictures.map((picture) => {
-      return {image: fileService.save(picture.image), ...picture}
-    });
     const allData = { ...data, images: allPictures };
     switch (data.category) {
       case "clothing":
