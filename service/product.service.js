@@ -15,15 +15,15 @@ class ProductService {
     // sort and filter
     const sort = queryParamter.sort || "-createdAt";
     const category = queryParamter.category;
-    const secondCategory = queryParamter.secondCategory;
+    const second_category = queryParamter.second_category;
     const search = queryParamter.search;
     let query = {};
     if (category) {
       query.category = category;
     }
 
-    if(secondCategory) {
-      query.second_category = secondCategory
+    if(second_category) {
+      query.second_category = second_category
     }
     if (search) {
       query.$or = [
