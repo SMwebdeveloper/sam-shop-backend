@@ -1,22 +1,57 @@
 const { Schema, model } = require("mongoose");
 
+const PriceSchema = new Schmema({
+  basePrice: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  currency: {
+    type: String,
+    required: true,
+    default: "UZS",
+    enum: ["UZS", "USD", "EUR"],
+  },
+  discount: {
+    amount: { type: Number, default: 0 },
+    percentage: { type: Number, default: 0, min: 0, max: 100 },
+    startDate: Date,
+    endDate: Date,
+  },
+  taxRate: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 100,
+  },
+});
 // product schema
 const ProductSchema = new Schema(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
     count: { type: Number, required: true },
-    price: { type: String, required: true },
+    price: PriceSchema,
+    priceHistory: [PriceSchema],
     category: {
       type: String,
       required: true,
       enum: ["clothing", "electronics", "other"],
     },
-    sold_count: { type: Number },
-    isActive: { type: Boolean, required: true },
+    sold: {
+      sold_count: { type: Number },
+      sold_history: [
+        {
+          userId: { type: Schema.ObjectId, ref: "User" },
+          price: PriceSchema,
+          count: { type: Number },
+        },
+      ],
+    },
+    isActive: { type: Boolean, required: true, default: false },
     second_category: { type: String, required: true },
     brand: { type: String },
-    author: {type: Schema.ObjectId, ref: "User"},
+    author: { type: Schema.ObjectId, ref: "User" },
     images: [
       {
         image: { type: String, required: true },

@@ -12,37 +12,71 @@ class ProductService {
     const limit = parseInt(queryParamter.limit);
     const skip = (page - 1) * limit;
 
-    // sort and filter
-    const sort = queryParamter.sort || "-createdAt";
-    const category = queryParamter.category;
-    const second_category = queryParamter.second_category;
-    const search = queryParamter.search;
+    // filter
+    const {
+      category,
+      second_category,
+      minPrice,
+      maxPrice,
+      minRating,
+      search,
+      sortBy,
+    } = queryParamter;
     let query = {};
     if (category) {
       query.category = category;
     }
 
-    if(second_category) {
-      query.second_category = second_category
+    if (second_category) {
+      query.second_category = second_category;
     }
+
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
+        { brand: { $regex: search, $options: "i" } },
       ];
-    } // Ma'lumotlarni olish
+    }
+
+    // Sortlash parametrlari
+    let sortOption = { createdAt: -1 }; // Default: yangilari birinchi
+
+    if (sortBy) {
+      switch (sortBy) {
+        case "rating":
+          sortOption = { averageRating: -1 };
+          break;
+        case "price_asc":
+          sortOption = { price: 1 };
+          break;
+        case "price_desc":
+          sortOption = { price: -1 };
+          break;
+        case "popular":
+          sortOption = { sold_count: -1 };
+          break;
+        case "newest":
+          sortOption = { createdAt: -1 };
+          break;
+      }
+    }
+
+    // Ma'lumotlarni olish
     const products = await Product.find(query)
-      .sort(sort)
+      .sort(sortOption)
       .skip(skip)
       .limit(limit)
-      .lean();
+      .lean().populate("author");
 
-    // Umumiy mahsulotlar soni
+    // Umumiy sonni hisoblash
     const total = await Product.countDocuments(query);
     const totalPages = Math.ceil(total / limit);
 
-    return{
+    // Javobni tayyorlash
+    const response = {
       success: true,
+      count: products.length,
       data: products,
       pagination: {
         total,
@@ -52,21 +86,41 @@ class ProductService {
         hasNextPage: page < totalPages,
         hasPrevPage: page > 1,
       },
-    }
+      filters: {
+        applied: {
+          category,
+          minRating,
+          priceRange: { minPrice, maxPrice },
+          sortBy,
+          search,
+        },
+        available: {
+          categories: await Product.distinct("category"),
+          maxPrice: await Product.findOne()
+            .sort({ price: -1 })
+            .select("price -_id"),
+          minPrice: await Product.findOne()
+            .sort({ price: 1 })
+            .select("price -_id"),
+          maxRating: 5,
+        },
+      },
+    };
+    return response
   }
 
   async createProduct(data) {
     let newProduct;
-    const allData = { ...data, images: allPictures };
+   
     switch (data.category) {
       case "clothing":
-        newProduct = await ClothingProduct.create(allData);
+        newProduct = await ClothingProduct.create(data);
         break;
       case "electronics":
-        newProduct = await ElectronicsProduct.create(allData);
+        newProduct = await ElectronicsProduct.create(data);
         break;
       default:
-        newProduct = await Product.create(allData);
+        newProduct = await Product.create(data);
     }
     return newProduct;
   }
