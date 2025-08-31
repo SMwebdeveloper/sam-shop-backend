@@ -110,6 +110,7 @@ class ProductService {
   }
 
   async createProduct(data) {
+    
     let newProduct;
    
     switch (data.category) {
