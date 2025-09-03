@@ -338,15 +338,22 @@ const ClothingProductSchema = new Schema({
     },
   },
   gender: {
-    uz: { type: String, enum: ["erkak", "ayol", "unisex"] },
-    ru: { type: String, enum: ["мужской", "женский", "унисекс"] },
-    en: { type: String, enum: ["men", "women", "unisex", "kids"] },
-    required: true,
+    uz: { type: String, enum: ["erkak", "ayol", "unisex"], required: true },
+    ru: {
+      type: String,
+      enum: ["мужской", "женский", "унисекс"],
+      required: true,
+    },
+    en: {
+      type: String,
+      enum: ["men", "women", "unisex", "kids"],
+      required: true,
+    },
   },
   season: {
     uz: { type: String, enum: ["Qish", "Bahor", "Yoz", "Kuz"] },
     ru: { type: String, enum: ["Зима", "Весна", "Лето", "Осень"] },
-    en: { type: String, enum: ["Winter","Spring","Summer","Autumn"]}
+    en: { type: String, enum: ["Winter", "Spring", "Summer", "Autumn"] },
   },
 });
 
@@ -359,15 +366,15 @@ const ElectronicsProductSchema = new Schema({
       details: String,
     },
     power: {
-      input: {type},
+      input: { type: String, required: true },
       battery: {
         type: String,
         capacity: String,
       },
     },
     dimensions: {
-      weight: {type:String},
-      size: {type:String},
+      weight: { type: String },
+      size: { type: String },
     },
     features: [String],
   },
