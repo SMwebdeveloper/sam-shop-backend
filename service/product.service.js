@@ -2,7 +2,10 @@ const {
   Product,
   ClothingProduct,
   ElectronicsProduct,
-} = require("../models/product.model");
+  HomeProduct,
+  BeautyProduct,
+  OtherProduct
+} = require("../models/Product/product.model");
 const BaseError = require("../errors/base.error");
 
 class ProductService {
@@ -113,13 +116,22 @@ class ProductService {
     
     let newProduct;
    
-    switch (data.category) {
+    switch (data.categories.main.en) {
       case "clothing":
         newProduct = await ClothingProduct.create(data);
         break;
       case "electronics":
         newProduct = await ElectronicsProduct.create(data);
         break;
+      case "home":
+        newProduct = await HomeProduct.create(data);
+        break;
+      case "beauty":
+        newProduct = await BeautyProduct.create(data);
+        break;
+      case "other":
+        newProduct = await OtherProduct.create(data);
+        break;  
       default:
         newProduct = await Product.create(data);
     }
