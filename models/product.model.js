@@ -1,5 +1,28 @@
 const { Schema, model } = require("mongoose");
-
+// sub categories
+const subCategories = {
+  uz: {
+    kiyim: ["erkaklar", "ayollar", "bolalar", "aksessuarlar"],
+    elektronika: ["telefonlar", "noutbuklar", "aksessuarlar", "komponentlar"],
+    uy: ["mebel", "dekor", "oshxona"],
+    "go'zallik": ["terini parvarish", "makiyaj", "soch parvarishi"],
+    boshqa: [],
+  },
+  ru: {
+    одежда: ["мужчины", "женщины", "дети", "аксессуары"],
+    электроника: ["телефоны", "ноутбуки", "аксессуары", "компоненты"],
+    дом: ["мебель", "декор", "кухня"],
+    красота: ["уход за кожей", "макияж", "уход за волосами"],
+    другой: [],
+  },
+  en: {
+    clothing: ["men", "women", "kids", "accessories"],
+    electronics: ["phones", "laptops", "accessories", "components"],
+    home: ["furniture", "decor", "kitchen"],
+    beauty: ["skincare", "makeup", "haircare"],
+    other: [],
+  },
+};
 //  1. Narx (Price) Modeli
 const PriceSchema = new Schema(
   {
@@ -101,23 +124,48 @@ const ProductSchema = new Schema(
     // Kategoriyalar va tasniflar
     categories: {
       main: {
-        type: String,
-        required: true,
-        enum: ["clothing", "electronics", "home", "beauty", "other"],
+        uz: {
+          type: String,
+          required: true,
+          enum: ["kiyim", "elektronika", "uy", "go'zallik", "boshqa"],
+        },
+        ru: {
+          type: String,
+          required: true,
+          enum: ["одежда", "электроника", "дом", "красота", "другой"],
+        },
+        en: {
+          type: String,
+          required: true,
+          enum: ["clothing", "electronics", "home", "beauty", "other"],
+        },
       },
       sub: {
-        type: String,
-        required: true,
-        validate: {
-          validator: function (v) {
-            const subCategories = {
-              clothing: ["men", "women", "kids", "accessories"],
-              electronics: ["phones", "laptops", "accessories", "components"],
-              home: ["furniture", "decor", "kitchen"],
-              beauty: ["skincare", "makeup", "haircare"],
-              other: [],
-            };
-            return subCategories[this.categories.main].includes(v);
+        uz: {
+          type: String,
+          required: true,
+          validate: {
+            validator: function (v) {
+              return subCategories.uz[this.categories.main].includes(v);
+            },
+          },
+        },
+        ru: {
+          type: String,
+          required: true,
+          validate: {
+            validator: function (v) {
+              return subCategories.ru[this.categories.main].includes(v);
+            },
+          },
+        },
+        en: {
+          type: String,
+          required: true,
+          validate: {
+            validator: function (v) {
+              return subCategories.en[this.categories.main].includes(v);
+            },
           },
         },
       },
@@ -244,15 +292,24 @@ const ProductSchema = new Schema(
 
     // Boshqaruv va status
     status: {
-      type: String,
-      enum: ["draft", "active", "inactive", "archived"],
-      default: "draft",
-      index: true,
-    },
-    approved: {
-      type: Boolean,
-      default: false,
-      index: true,
+      uz: {
+        type: String,
+        enum: ["draft", "active", "inactive", "archived"],
+        default: "draft",
+        index: true,
+      },
+      ru: {
+        type: String,
+        enum: ["draft", "active", "inactive", "archived"],
+        default: "draft",
+        index: true,
+      },
+      en: {
+        type: String,
+        enum: ["draft", "active", "inactive", "archived"],
+        default: "draft",
+        index: true,
+      },
     },
     featured: {
       type: Boolean,
@@ -385,6 +442,157 @@ const ElectronicsProductSchema = new Schema({
   },
   serialNumber: String,
 });
+// Uy mahsulotlari uchun
+const HomeProductSchema = new Schema({
+  attributes: {
+    material: {
+      uz: { type: String },
+      ru: { type: String },
+      en: { type: String },
+    },
+    color: {
+      uz: { type: String },
+      ru: { type: String },
+      en: { type: String },
+    },
+    dimensions: {
+      length: Number,
+      width: Number,
+      height: Number,
+      weight: Number,
+    },
+    roomType: {
+      en: {
+        type: String,
+        enum: [
+          "living room",
+          "bedroom",
+          "kitchen",
+          "bathroom",
+          "office",
+          "other",
+        ],
+      },
+      uz: {
+        type: String,
+        enum: [
+          "yashash xonasi",
+          "yotoq xonasi",
+          "oshxona",
+          "hammom",
+          "ofis",
+          "boshqa",
+        ],
+      },
+      ru: {
+        type: String,
+        enum: ["гостиная", "спальня", "кухня", "ванная", "офис", "другой"],
+      },
+    },
+    assemblyRequired: { type: Boolean, default: false }, // yig‘ish kerakmi?
+  },
+  warranty: {
+    duration: Number, // oyda
+    details: String,
+  },
+});
+// Go'zzalik uchun model
+const BeautyProductSchema = new Schema({
+  attributes: {
+    skinType: {
+      uz: {
+        type: String,
+        enum: ["normal", "quruq", "yog‘li", "aralash", "sezgir"],
+      },
+      ru: {
+        type: String,
+        enum: [
+          "нормальная",
+          "сухая",
+          "жирная",
+          "комбинированная",
+          "чувствительная",
+        ],
+      },
+      en: {
+        type: String,
+        enum: ["normal", "dry", "oily", "combination", "sensitive"],
+      },
+    },
+    hairType: {
+      uz: {
+        type: String,
+        enum: ["normal", "quruq", "yog‘li", "bo‘yalgan", "jingalak"],
+      },
+      ru: {
+        type: String,
+        enum: ["нормальные", "сухие", "жирные", "окрашенные", "вьющиеся"],
+      },
+      en: {
+        type: String,
+        enum: ["normal", "dry", "oily", "colored", "curly"],
+      },
+    },
+    volume: { type: String },
+    ingredients: [
+      {
+        uz: { type: String },
+        ru: { type: String },
+        en: { type: String },
+      },
+    ],
+    hypoallergenic: { type: Boolean, default: false },
+    expirationDate: Date,
+  },
+  usageInstructions: {
+    uz: { type: String },
+    ru: { type: String },
+    en: { type: String },
+  },
+});
+// boshqa mahsulotlar uchun model
+const OthersProductSchema = new Schema({
+  attributes: {
+    material: {
+      uz: {
+        type: String,
+        enum: ["plastmassa", "metall", "yog‘och", "qog‘oz", "boshqa"],
+      },
+      ru: {
+        type: String,
+        enum: ["пластмасса", "металл", "дерево", "бумага", "другое"],
+      },
+      en: {
+        type: String,
+        enum: ["plastic", "metal", "wood", "paper", "other"],
+      },
+    },
+    color: {
+      uz: { type: String },
+      ru: { type: String },
+      en: { type: String },
+      hexCode: { type: String },
+    },
+    brandCountry: {
+      uz: { type: String },
+      ru: { type: String },
+      en: { type: String },
+    },
+    warranty: {
+      duration: Number, // oylar
+      description: {
+        uz: { type: String },
+        ru: { type: String },
+        en: { type: String },
+      },
+    },
+    usage: {
+      uz: { type: String },
+      ru: { type: String },
+      en: { type: String },
+    },
+  },
+});
 
 //  6. Modelni Yaratish
 const Product = model("Product", ProductSchema);
@@ -396,5 +604,17 @@ const ElectronicsProduct = Product.discriminator(
   "ElectronicsProduct",
   ElectronicsProductSchema
 );
-
-module.exports = { Product, ClothingProduct, ElectronicsProduct };
+const HomeProduct = Product.discriminator("HomeProduct", HomeProductSchema);
+const BeautyProduct = Product.discriminator(
+  "BeautyProduct",
+  BeautyProductSchema
+);
+const OtherProduct = Product.discriminator("OtherProduct", OthersProductSchema);
+module.exports = {
+  Product,
+  ClothingProduct,
+  ElectronicsProduct,
+  HomeProduct,
+  BeautyProduct,
+  OtherProduct,
+};
