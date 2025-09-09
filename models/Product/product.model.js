@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const PriceSchema = require("./price.model");
 // sub categories
 const subCategories = {
   uz: {
@@ -23,7 +24,6 @@ const subCategories = {
     other: [],
   },
 };
-
 
 //  Main Product Model
 const ProductSchema = new Schema(
@@ -76,7 +76,7 @@ const ProductSchema = new Schema(
           required: true,
           validate: {
             validator: function (v) {
-              return subCategories.uz[this.categories.main].includes(v);
+              return subCategories.uz[this.categories.main.uz].includes(v);
             },
           },
         },
@@ -85,7 +85,7 @@ const ProductSchema = new Schema(
           required: true,
           validate: {
             validator: function (v) {
-              return subCategories.ru[this.categories.main].includes(v);
+              return subCategories.ru[this.categories.main.ru].includes(v);
             },
           },
         },
@@ -94,7 +94,7 @@ const ProductSchema = new Schema(
           required: true,
           validate: {
             validator: function (v) {
-              return subCategories.en[this.categories.main].includes(v);
+              return subCategories.en[this.categories.main.en].includes(v);
             },
           },
         },
@@ -203,7 +203,7 @@ const ProductSchema = new Schema(
     averageRating: {
       type: Number,
       default: 0,
-      min: 1,
+      min: 0,
       max: 5,
       set: (v) => parseFloat(v.toFixed(1)),
     },

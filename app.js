@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 9090;
 const startProject = async () => {
   try {
     await mongoose
-      .connect(process.env.MONGO_URI)
+      .connect("mongodb://localhost:27017/sam-shop-backend")
       .then(() => console.log("MongoDB connected"));
     app.listen(PORT, () => {
       console.log(`Listening on - http://localhost:${PORT}`);

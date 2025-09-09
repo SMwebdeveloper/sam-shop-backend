@@ -4,10 +4,10 @@ const {
   ElectronicsProduct,
   HomeProduct,
   BeautyProduct,
-  OtherProduct
-} = require("../models/Product/product.model");
+  OtherProduct,
+} = require("../models/Product/index");
 const BaseError = require("../errors/base.error");
-
+const { generateUniqueSlug } = require("../utils/slugify");
 class ProductService {
   async getAllProducts(queryParamter) {
     // pagination parametr
@@ -70,7 +70,8 @@ class ProductService {
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
-      .lean().populate("author");
+      .lean()
+      .populate("author");
 
     // Umumiy sonni hisoblash
     const total = await Product.countDocuments(query);
@@ -109,32 +110,35 @@ class ProductService {
         },
       },
     };
-    return response
+    return response;
   }
 
   async createProduct(data) {
-    
+    const slug = await generateUniqueSlug(Product, data.name.en);
+
+    const productData = { ...data, slug };
     let newProduct;
-   
-    switch (data.categories.main.en) {
+
+    switch (productData.categories.main.en) {
       case "clothing":
-        newProduct = await ClothingProduct.create(data);
+        newProduct = await ClothingProduct.create(productData);
         break;
       case "electronics":
-        newProduct = await ElectronicsProduct.create(data);
+        newProduct = await ElectronicsProduct.create(productData);
         break;
       case "home":
-        newProduct = await HomeProduct.create(data);
+        newProduct = await HomeProduct.create(productData);
         break;
       case "beauty":
-        newProduct = await BeautyProduct.create(data);
+        newProduct = await BeautyProduct.create(productData);
         break;
       case "other":
-        newProduct = await OtherProduct.create(data);
-        break;  
+        newProduct = await OtherProduct.create(productData);
+        break;
       default:
-        newProduct = await Product.create(data);
+        newProduct = await Product.create(productData);
     }
+
     return newProduct;
   }
 

@@ -1,18 +1,18 @@
-const Product = require("./product.model");
+const { Product } = require("./product.model");
 const { Schema } = require("mongoose");
 
 const ElectronicsProductSchema = new Schema({
   specifications: {
     warranty: {
-      duration: Number, // oylarda
-      type: String, // "manufacturer", "seller"
-      details: String,
+      duration: { type: Number }, // oy
+      provider: { type: String }, // oldingi `type` -> renamed
+      details: { type: String },
     },
     power: {
       input: { type: String, required: true },
       battery: {
-        type: String,
-        capacity: String,
+        batteryType: { type: String }, // oldingi `type` -> renamed
+        capacity: { type: String },
       },
     },
     dimensions: {

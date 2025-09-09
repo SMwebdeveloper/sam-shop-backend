@@ -20,3 +20,4 @@ const generateUniqueSlug = async (Model, text) => {
 
   return slug;
 };
+module.exports = { generateUniqueSlug };

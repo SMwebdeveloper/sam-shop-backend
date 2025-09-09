@@ -1,4 +1,4 @@
-const Product = require("./product.model");
+const { Product } = require("./product.model");
 const { Schema } = require("mongoose");
 const ClothingProductSchema = new Schema({
   attributes: {
@@ -58,4 +58,4 @@ const ClothingProduct = Product.discriminator(
   "ClothingProduct",
   ClothingProductSchema
 );
-module.exports = {ClothingProduct};
+module.exports = { ClothingProduct };

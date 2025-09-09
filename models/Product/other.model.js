@@ -1,5 +1,5 @@
-const Product = require("./product.model")
-const { Schema } = require("mongoose")
+const { Product } = require("./product.model");
+const { Schema } = require("mongoose");
 
 const OthersProductSchema = new Schema({
   attributes: {
@@ -45,4 +45,4 @@ const OthersProductSchema = new Schema({
 });
 const OtherProduct = Product.discriminator("OtherProduct", OthersProductSchema);
 
-module.exports = { OtherProduct }
+module.exports = { OtherProduct };

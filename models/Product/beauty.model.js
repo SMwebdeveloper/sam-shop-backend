@@ -1,4 +1,4 @@
-const Product = require("./product.model");
+const { Product } = require("./product.model");
 const { Schema } = require("mongoose");
 
 const BeautyProductSchema = new Schema({
