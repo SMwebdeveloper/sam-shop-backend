@@ -21,6 +21,7 @@ class AuthControl {
       });
       return res.status(200).json(user);
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
@@ -67,31 +68,31 @@ class AuthControl {
       const { email } = req.body;
       await authService.resetPassword(email);
       return res.json({ success: true });
-  } catch (error) {
+    } catch (error) {
       next(error);
     }
   }
 
-  async recoveryAccount (req, res, next) {
+  async recoveryAccount(req, res, next) {
     try {
-      const {token, password} = req.body
-      await authService.recoveryAccount(token, password)
-      return res.json({success: true})
+      const { token, password } = req.body;
+      await authService.recoveryAccount(token, password);
+      return res.json({ success: true });
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
-  async refresh (req, res, next) {
+  async refresh(req, res, next) {
     try {
-      const {refreshToken} = req.cookies
-      const data = await authService.refresh(refreshToken)
+      const { refreshToken } = req.cookies;
+      const data = await authService.refresh(refreshToken);
       res.cookie("refreshToken", data.refreshToken, {
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
-      return res.json(data)
+      return res.json(data);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 }

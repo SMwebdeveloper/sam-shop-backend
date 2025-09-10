@@ -1,5 +1,6 @@
 const { Product } = require("./product.model");
 const { Schema } = require("mongoose");
+
 const ClothingProductSchema = new Schema({
   attributes: {
     material: {
@@ -29,7 +30,7 @@ const ClothingProductSchema = new Schema({
       ru: { type: String },
       en: { type: String },
     },
-    originCountry: String,
+    originCountry: {type: String},
     sizeGuide: {
       type: Map,
       of: String,

@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const PriceSchema = require("./price.model");
+const {recalcInventory} = require("../../utils/recalcInventory")
 // sub categories
 const subCategories = {
   uz: {
@@ -114,11 +115,11 @@ const ProductSchema = new Schema(
               ru: { type: String, required: true },
               en: { type: String, required: true },
             },
-            hexCode: String,
+            hexCode: {type: String, required: true},
             images: [
               {
                 url: { type: String, required: true },
-                isPrimary: Boolean,
+                isPrimary: {type: Boolean},
               },
             ],
           },
@@ -126,29 +127,29 @@ const ProductSchema = new Schema(
             {
               value: { type: String, required: true },
               quantity: { type: Number, default: 0, min: 0 },
-              sku: String,
-              barcode: String,
+              sku: {type: String},
+              barcode: {type: String},
               dimensions: {
-                length: Number,
-                width: Number,
-                height: Number,
+                length: {type: Number},
+                width: {type: Number},
+                height: {type: Number},
               },
             },
           ],
           stock: {
-            type: Number,
+            type: {type: Number},
             default: 0,
             min: 0,
           },
         },
       ],
       totalQuantity: {
-        type: Number,
+        type: {type: Number},
         default: 0,
         min: 0,
       },
       lowStockThreshold: {
-        type: Number,
+        type: {type: Number},
         default: 5,
       },
     },
@@ -158,16 +159,16 @@ const ProductSchema = new Schema(
       mainImages: [
         {
           url: { type: String, required: true },
-          isPrimary: Boolean,
-          altText: String,
-          order: Number,
+          isPrimary: {type: Boolean},
+          altText: {type: String},
+          order: {type: Number},
         },
       ],
       videos: [
         {
-          url: String,
-          thumbnail: String,
-          title: String,
+          url: {type: String},
+          thumbnail: {type: String},
+          title: {type: String},
         },
       ],
     },
@@ -182,8 +183,8 @@ const ProductSchema = new Schema(
           items: [
             {
               variantId: Schema.Types.ObjectId,
-              quantity: Number,
-              price: Number,
+              quantity: {type: Number},
+              price: {type: Number},
             },
           ],
         },
@@ -195,7 +196,7 @@ const ProductSchema = new Schema(
       {
         userId: { type: Schema.Types.ObjectId, ref: "User" },
         rating: { type: Number, min: 1, max: 5 },
-        review: String,
+        review: {type: String},
         images: [String],
         createdAt: { type: Date, default: Date.now },
       },
@@ -210,10 +211,12 @@ const ProductSchema = new Schema(
 
     // Brend va sotuvchi
     brand: {
-      type: String,
-      index: true,
+     uz: {type: String
+      },
+      ru: {type: String},
+      en: {type: String}
     },
-    manufacturer: String,
+    manufacturer: {type: String},
     vendor: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -287,6 +290,28 @@ ProductSchema.index({ averageRating: -1 });
 ProductSchema.index({ createdAt: -1 });
 ProductSchema.index({ status: 1, approved: 1 });
 
+// pre save (create or save())
+ProductSchema.pre("save", function (next){
+  recalcInventory(this)
+  next()  
+})
+
+// pre update (findOneUpdate, updateOne, updateMany)
+ProductSchema.pre(["findOneAndUpdate", "updateOne", "updateMany"], async function (next) {
+  const update = this.getUpdate()
+
+  // update only inventory
+  if(update && update.inventory) {
+    const doc = {inventory: update.inventory}
+    recalcInventory(doc)
+
+    // retype update property
+    update["inventory.variants"] = doc.inventory.variants
+    update["inventory.totalQuantity"] = doc.inventory.totalQuantity 
+  }
+
+  next()
+})
 const Product = model("Product", ProductSchema);
 
 module.exports = { Product };
