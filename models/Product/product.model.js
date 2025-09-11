@@ -104,8 +104,8 @@ const ProductSchema = new Schema(
     tags: [{ type: String, index: true }],
 
     // Narx va inventarizatsiya
-    price: PriceSchema,
-    priceHistory: [PriceSchema],
+    price: {type: PriceSchema},
+    priceHistory: [{type: PriceSchema}],
     inventory: {
       variants: [
         {
@@ -137,19 +137,19 @@ const ProductSchema = new Schema(
             },
           ],
           stock: {
-            type: {type: Number},
+            type: Number,
             default: 0,
             min: 0,
           },
-        },
+        }
       ],
       totalQuantity: {
-        type: {type: Number},
+        type: Number,
         default: 0,
         min: 0,
       },
       lowStockThreshold: {
-        type: {type: Number},
+        type:  Number,
         default: 5,
       },
     },
@@ -270,17 +270,35 @@ ProductSchema.virtual("inStock").get(function () {
   );
 });
 
-ProductSchema.virtual("discountedPrice").get(function () {
-  if (!this.price.discount.isActive) return this.price.basePrice;
+//
+// Virtuals
+//
+ProductSchema.virtual("isDiscountActive").get(function () {
+  const now = new Date();
+  const discount = this.price?.discount;
+  if (!discount) return false;
 
-  if (this.price.discount.type === "amount") {
-    return this.price.basePrice - this.price.discount.value;
-  } else if (this.price.discount.type === "percentage") {
-    return this.price.basePrice * (1 - this.price.discount.value / 100);
-  }
-  return this.price.basePrice;
+  return (
+    discount.isActive &&
+    (!discount.startDate || now >= discount.startDate) &&
+    (!discount.endDate || now <= discount.endDate)
+  );
 });
 
+ProductSchema.virtual("discountedPrice").get(function () {
+  const base = this.price?.basePrice ?? 0;
+  const discount = this.price?.discount;
+
+  if (!discount || !this.isDiscountActive) return base;
+
+  if (discount.type === "amount") {
+    return base - discount.value;
+  } else if (discount.type === "percentage") {
+    return base * (1 - discount.value / 100);
+  }
+
+  return base;
+});
 // Index
 ProductSchema.index({ name: "text", description: "text" });
 ProductSchema.index({ "categories.main": 1, "categories.sub": 1 });
@@ -291,7 +309,7 @@ ProductSchema.index({ createdAt: -1 });
 ProductSchema.index({ status: 1, approved: 1 });
 
 // pre save (create or save())
-ProductSchema.pre("save", function (next){
+ProductSchema.pre(["create", "save"], function (next){
   recalcInventory(this)
   next()  
 })

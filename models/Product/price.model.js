@@ -61,7 +61,7 @@ const PriceSchema = new Schema(
         type: Boolean,
         default: true,
       },
-      type: {
+      taxType: {
         type: String,
         enum: ["VAT", "SalesTax", null],
         default: null,

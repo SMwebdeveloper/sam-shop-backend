@@ -114,6 +114,7 @@ class ProductService {
   }
 
   async createProduct(data) {
+    console.log(data)
     const slug = await generateUniqueSlug(Product, data.name.en);
 
     const productData = { ...data, slug };
@@ -138,7 +139,6 @@ class ProductService {
       default:
         newProduct = await Product.create(productData);
     }
-
     return newProduct;
   }
 
