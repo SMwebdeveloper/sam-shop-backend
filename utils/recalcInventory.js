@@ -16,7 +16,7 @@ function recalcInventory(doc) {
     total = variantStock;
   });
 
-  doc.totalQuantity = total;
+  doc.inventory.totalQuantity = total;
 }
 
 module.exports = { recalcInventory };
