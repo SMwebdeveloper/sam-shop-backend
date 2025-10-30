@@ -8,113 +8,147 @@ const {
 } = require("../models/Product/index");
 const BaseError = require("../errors/base.error");
 const { generateUniqueSlug } = require("../utils/slugify");
-class ProductService {
-  async getAllProducts(queryParamter) {
-    // pagination parametr
-    const page = parseInt(queryParamter.page);
-    const limit = parseInt(queryParamter.limit);
-    const skip = (page - 1) * limit;
 
-    // filter
+class ProductService {
+  async getAllProducts(queryParameters) {
     const {
+      page = 1,
+      total = 10,
+      search,
+      brand,
       category,
-      second_category,
+      subCategory,
+      status,
+      featured,
       minPrice,
       maxPrice,
-      minRating,
-      search,
-      sortBy,
-    } = queryParamter;
-    let query = {};
-    if (category) {
-      query.category = category;
-    }
+      inStock,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = queryParameters;
 
-    if (second_category) {
-      query.second_category = second_category;
-    }
+    // Filter obyektini yaratish
+    const filter = {};
 
+    // Search (nomi bo'yicha)
     if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { brand: { $regex: search, $options: "i" } },
+      filter.$or = [
+        { "name.uz": { $regex: search, $options: "i" } },
+        { "name.ru": { $regex: search, $options: "i" } },
+        { "name.en": { $regex: search, $options: "i" } },
+        { "description.uz": { $regex: search, $options: "i" } },
+        { "description.ru": { $regex: search, $options: "i" } },
+        { "description.en": { $regex: search, $options: "i" } },
       ];
     }
 
-    // Sortlash parametrlari
-    let sortOption = { createdAt: -1 }; // Default: yangilari birinchi
+    // Brand bo'yicha filter
+    if (brand) {
+      filter.$or = [
+        { "brand.uz": { $regex: brand, $options: "i" } },
+        { "brand.ru": { $regex: brand, $options: "i" } },
+        { "brand.en": { $regex: brand, $options: "i" } },
+      ];
+    }
 
-    if (sortBy) {
-      switch (sortBy) {
-        case "rating":
-          sortOption = { averageRating: -1 };
-          break;
-        case "price_asc":
-          sortOption = { price: 1 };
-          break;
-        case "price_desc":
-          sortOption = { price: -1 };
-          break;
-        case "popular":
-          sortOption = { sold_count: -1 };
-          break;
-        case "newest":
-          sortOption = { createdAt: -1 };
-          break;
+    // Category bo'yicha filter
+    if (category) {
+      filter.$or = [
+        { "categories.main.uz": category },
+        { "categories.main.ru": category },
+        { "categories.main.en": category },
+      ];
+    }
+
+    // Sub-category bo'yicha filter
+    if (subCategory) {
+      filter.$or = [
+        { "categories.sub.uz": subCategory },
+        { "categories.sub.ru": subCategory },
+        { "categories.sub.en": subCategory },
+      ];
+    }
+
+    // Status bo'yicha filter
+    if (status) {
+      filter.$or = [
+        { "status.uz": status },
+        { "status.ru": status },
+        { "status.en": status },
+      ];
+    }
+
+    // Featured bo'yicha filter
+    if (featured !== undefined) {
+      filter.featured = featured === "true";
+    }
+
+    // Narx bo'yicha filter
+    if (minPrice || maxPrice) {
+      filter["price.basePrice"] = {};
+      if (minPrice) filter["price.basePrice"].$gte = Number(minPrice);
+      if (maxPrice) filter["price.basePrice"].$lte = Number(maxPrice);
+    }
+
+    // Stock bo'yicha filter
+    if (inStock !== undefined) {
+      if (inStock === "true") {
+        filter.$or = [
+          { "inventory.totalQuantity": { $gt: 0 } },
+          { "inventory.variants.sizes.quantity": { $gt: 0 } },
+        ];
+      } else {
+        filter.$and = [
+          { "inventory.totalQuantity": 0 },
+          { "inventory.variants.sizes.quantity": 0 },
+        ];
       }
     }
 
-    // Ma'lumotlarni olish
-    const products = await Product.find(query)
-      .sort(sortOption)
-      .skip(skip)
-      .limit(limit)
-      .lean()
-      .populate("author");
+    // Sortlash
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
 
-    // Umumiy sonni hisoblash
-    const total = await Product.countDocuments(query);
-    const totalPages = Math.ceil(total / limit);
+    // Paginatsiya
+    const skip = (page - 1) * total;
+    const limit = parseInt(total);
 
-    // Javobni tayyorlash
-    const response = {
-      success: true,
-      count: products.length,
-      data: products,
-      pagination: {
-        total,
-        totalPages,
+    try {
+      // Productlarni olish
+      const products = await Product.find(filter)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limit)
+        .populate("vendor", "name email") // Vendor ma'lumotlarini populate qilish
+        .exec();
+
+      // Umumiy productlar soni
+      const totalProducts = await Product.countDocuments(filter);
+
+      // Umumiy sahifalar soni
+      const totalPages = Math.ceil(totalProducts / limit);
+
+      // Paginatsiya ma'lumotlari
+      const pagination = {
         currentPage: page,
+        totalPages,
+        totalProducts,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
         limit,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
-      },
-      filters: {
-        applied: {
-          category,
-          minRating,
-          priceRange: { minPrice, maxPrice },
-          sortBy,
-          search,
-        },
-        available: {
-          categories: await Product.distinct("category"),
-          maxPrice: await Product.findOne()
-            .sort({ price: -1 })
-            .select("price -_id"),
-          minPrice: await Product.findOne()
-            .sort({ price: 1 })
-            .select("price -_id"),
-          maxRating: 5,
-        },
-      },
-    };
-    return response;
+      };
+
+      return {
+        success: true,
+        data: products,
+        pagination,
+      };
+    } catch (error) {
+      throw new Error(`Productlarni olishda xatolik: ${error.message}`);
+    }
   }
 
   async createProduct(data) {
-    console.log(data)
     const slug = await generateUniqueSlug(Product, data.name.en);
 
     const productData = { ...data, slug };

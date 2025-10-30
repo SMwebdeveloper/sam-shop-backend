@@ -1,6 +1,7 @@
 const { Schema, model } = require("mongoose");
+const mongoose = require("mongoose");
 const PriceSchema = require("./price.model");
-const {recalcInventory} = require("../../utils/recalcInventory")
+const { recalcInventory } = require("../../utils/recalcInventory");
 // sub categories
 const subCategories = {
   uz: {
@@ -104,8 +105,8 @@ const ProductSchema = new Schema(
     tags: [{ type: String, index: true }],
 
     // Narx va inventarizatsiya
-    price: {type: PriceSchema},
-    priceHistory: [{type: PriceSchema}],
+    price: { type: PriceSchema },
+    priceHistory: [{ type: PriceSchema }],
     inventory: {
       variants: [
         {
@@ -115,11 +116,11 @@ const ProductSchema = new Schema(
               ru: { type: String, required: true },
               en: { type: String, required: true },
             },
-            hexCode: {type: String, required: true},
+            hexCode: { type: String, required: true },
             images: [
               {
                 url: { type: String, required: true },
-                isPrimary: {type: Boolean},
+                isPrimary: { type: Boolean },
               },
             ],
           },
@@ -127,12 +128,12 @@ const ProductSchema = new Schema(
             {
               value: { type: String, required: true },
               quantity: { type: Number, default: 0, min: 0 },
-              sku: {type: String},
-              barcode: {type: String},
+              sku: { type: String },
+              barcode: { type: String },
               dimensions: {
-                length: {type: Number},
-                width: {type: Number},
-                height: {type: Number},
+                length: { type: Number },
+                width: { type: Number },
+                height: { type: Number },
               },
             },
           ],
@@ -141,7 +142,7 @@ const ProductSchema = new Schema(
             default: 0,
             min: 0,
           },
-        }
+        },
       ],
       totalQuantity: {
         type: Number,
@@ -149,7 +150,7 @@ const ProductSchema = new Schema(
         min: 0,
       },
       lowStockThreshold: {
-        type:  Number,
+        type: Number,
         default: 5,
       },
     },
@@ -159,16 +160,16 @@ const ProductSchema = new Schema(
       mainImages: [
         {
           url: { type: String, required: true },
-          isPrimary: {type: Boolean},
-          altText: {type: String},
-          order: {type: Number},
+          isPrimary: { type: Boolean },
+          altText: { type: String },
+          order: { type: Number },
         },
       ],
       videos: [
         {
-          url: {type: String},
-          thumbnail: {type: String},
-          title: {type: String},
+          url: { type: String },
+          thumbnail: { type: String },
+          title: { type: String },
         },
       ],
     },
@@ -183,8 +184,8 @@ const ProductSchema = new Schema(
           items: [
             {
               variantId: Schema.Types.ObjectId,
-              quantity: {type: Number},
-              price: {type: Number},
+              quantity: { type: Number },
+              price: { type: Number },
             },
           ],
         },
@@ -196,7 +197,7 @@ const ProductSchema = new Schema(
       {
         userId: { type: Schema.Types.ObjectId, ref: "User" },
         rating: { type: Number, min: 1, max: 5 },
-        review: {type: String},
+        review: { type: String },
         images: [String],
         createdAt: { type: Date, default: Date.now },
       },
@@ -211,30 +212,34 @@ const ProductSchema = new Schema(
 
     // Brend va sotuvchi
     brand: {
-     uz: {type: String
-      },
-      ru: {type: String},
-      en: {type: String}
+      uz: { type: String },
+      ru: { type: String },
+      en: { type: String },
     },
-    manufacturer: {type: String},
+    manufacturer: { type: String },
     vendor: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
+      validate: {
+        validator: function (v) {
+          return mongoose.Types.ObjectId.isValid(v);
+        },
+      },
     },
 
     // Boshqaruv va status
     status: {
       uz: {
         type: String,
-        enum: ["draft", "active", "inactive", "archived"],
-        default: "draft",
+        enum: ["qoralama", "faol", "nofaol", "arxivlangan"],
+        default: "qoralama",
         index: true,
       },
       ru: {
         type: String,
-        enum: ["draft", "active", "inactive", "archived"],
-        default: "draft",
+        enum: ["черновик", "активный", "неактивный", "архивировано"],
+        default: "черновик",
         index: true,
       },
       en: {
@@ -309,27 +314,30 @@ ProductSchema.index({ createdAt: -1 });
 ProductSchema.index({ status: 1, approved: 1 });
 
 // pre save (create or save())
-ProductSchema.pre(["create", "save"], function (next){
-  recalcInventory(this)
-  next()  
-})
+ProductSchema.pre(["create", "save"], function (next) {
+  recalcInventory(this);
+  next();
+});
 
 // pre update (findOneUpdate, updateOne, updateMany)
-ProductSchema.pre(["findOneAndUpdate", "updateOne", "updateMany"], async function (next) {
-  const update = this.getUpdate()
+ProductSchema.pre(
+  ["findOneAndUpdate", "updateOne", "updateMany"],
+  async function (next) {
+    const update = this.getUpdate();
 
-  // update only inventory
-  if(update && update.inventory) {
-    const doc = {inventory: update.inventory}
-    recalcInventory(doc)
+    // update only inventory
+    if (update && update.inventory) {
+      const doc = { inventory: update.inventory };
+      recalcInventory(doc);
 
-    // retype update property
-    update["inventory.variants"] = doc.inventory.variants
-    update["inventory.totalQuantity"] = doc.inventory.totalQuantity 
+      // retype update property
+      update["inventory.variants"] = doc.inventory.variants;
+      update["inventory.totalQuantity"] = doc.inventory.totalQuantity;
+    }
+
+    next();
   }
-
-  next()
-})
+);
 const Product = model("Product", ProductSchema);
 
 module.exports = { Product };

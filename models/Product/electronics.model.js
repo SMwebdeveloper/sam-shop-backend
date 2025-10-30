@@ -9,7 +9,7 @@ const ElectronicsProductSchema = new Schema({
       details: { type: String },
     },
     power: {
-      input: { type: String, required: true },
+      input: { type: String },
       battery: {
         batteryType: { type: String }, // oldingi `type` -> renamed
         capacity: { type: String },
@@ -24,7 +24,6 @@ const ElectronicsProductSchema = new Schema({
   boxContents: [String],
   modelNumber: {
     type: String,
-    required: true,
   },
   serialNumber: String,
 });
