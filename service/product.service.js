@@ -122,7 +122,7 @@ class ProductService {
         .populate("vendor", "name email") // Vendor ma'lumotlarini populate qilish
         .exec();
 
-      // Umumiy productlar soni
+      // Umumiy productlar sonitotalPages
       const totalProducts = await Product.countDocuments(filter);
 
       // Umumiy sahifalar soni
