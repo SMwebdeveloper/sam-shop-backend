@@ -18,9 +18,11 @@ const OthersProductSchema = new Schema({
       },
     },
     color: {
-      uz: { type: String },
-      ru: { type: String },
-      en: { type: String },
+      name: {
+        uz: { type: String },
+        ru: { type: String },
+        en: { type: String },
+      },
       hexCode: { type: String },
     },
     brandCountry: {

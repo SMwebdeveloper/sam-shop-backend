@@ -3,7 +3,8 @@ const productService = require("../service/product.service");
 class ProductController {
   async getAllProducts(req, res, next) {
     try {
-      const products = await productService.getAllProducts(req.query);
+      const language = req.headers["accept-language"] || "uz";
+      const products = await productService.getAllProducts(req.query, language);
       res.status(200).json(products);
     } catch (error) {
       next(error);

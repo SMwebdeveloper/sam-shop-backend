@@ -6,7 +6,11 @@ const ElectronicsProductSchema = new Schema({
     warranty: {
       duration: { type: Number }, // oy
       provider: { type: String }, // oldingi `type` -> renamed
-      details: { type: String },
+      details: {
+        uz: { type: String },
+        ru: { type: String },
+        en: { type: String },
+      },
     },
     power: {
       input: { type: String },

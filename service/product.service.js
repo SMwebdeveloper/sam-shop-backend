@@ -6,11 +6,12 @@ const {
   BeautyProduct,
   OtherProduct,
 } = require("../models/Product/index");
+const localizeProduct = require("../utils/localizeProduct");
 const BaseError = require("../errors/base.error");
 const { generateUniqueSlug } = require("../utils/slugify");
 
 class ProductService {
-  async getAllProducts(queryParameters) {
+  async getAllProducts(queryParameters, language = "uz") {
     const {
       page = 1,
       total = 10,
@@ -122,6 +123,10 @@ class ProductService {
         .populate("vendor", "name email") // Vendor ma'lumotlarini populate qilish
         .exec();
 
+      // Mahalliylashtirish
+      const localizedProducts = products.map((product) =>
+        localizeProduct(product, language)
+      );
       // Umumiy productlar sonitotalPages
       const totalProducts = await Product.countDocuments(filter);
 
@@ -140,7 +145,7 @@ class ProductService {
 
       return {
         success: true,
-        data: products,
+        data: localizedProducts,
         pagination,
       };
     } catch (error) {
