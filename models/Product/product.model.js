@@ -195,7 +195,7 @@ const ProductSchema = new Schema(
     // Reytinglar va sharhlar
     ratings: [
       {
-        userId: { type: Schema.Types.ObjectId, ref: "User" },
+        userId: { type: Schema.Types.ObjectId },
         rating: { type: Number, min: 1, max: 5 },
         review: { type: String },
         images: [String],
@@ -219,7 +219,6 @@ const ProductSchema = new Schema(
     manufacturer: { type: String },
     vendor: {
       type: Schema.Types.ObjectId,
-      ref: "User",
       required: false,
       validate: {
         validator: function (v) {

@@ -8,16 +8,16 @@ module.exports = class BaseError extends Error {
     this.errors = errors;
     this.locale = locale;
   }
-
-  static UnAuthorizedError(locale = "uz") {
-    const message = {
-      uz: "Foydalanuvchi avtorizatsiyadan o'tmagan",
-      ru: "Пользователь не авторизован",
-      en: "User is not authorized",
+  static Unauthorized(message = null, locale = "uz") {
+    const defaultMessages = {
+      uz: "Avtorizatsiya talab qilinadi",
+      ru: "Требуется авторизация",
+      en: "Authorization required",
     };
-    return new BaseError(401, message[locale], [], locale);
+    const finaleMessage = message || defaultMessages[locale];
+    return new BaseError(401, finaleMessage, [], locale);
   }
-  static BadRequest(message, errors = []) {
+  static BadRequest(message, errors = [], locale = "uz") {
     const defaultMessages = {
       uz: "Noto'g'ri so'rov",
       ru: "Неверный запрос",
@@ -61,6 +61,15 @@ module.exports = class BaseError extends Error {
     const finaleMessage = message || defaultMessages[locale];
     return new BaseError(409, finaleMessage, [], locale);
   }
+  static ValidationError(errors = [], locale = "uz") {
+    const messages = {
+      uz: "Validatsiya xatosi",
+      ru: "Ошибка валидации",
+      en: "Validation error",
+    };
+    return new BaseError(400, messages[locale], errors, locale);
+  }
+
   static UnprocessableEntity(message = null, errors = [], locale = "uz") {
     const defaultMessages = {
       uz: "So'rovni qayta ishlab bo'lmadi",

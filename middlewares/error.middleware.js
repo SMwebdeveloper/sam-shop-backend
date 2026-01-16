@@ -1,11 +1,8 @@
 const BaseError = require("../errors/base.error");
 
 module.exports = function (err, req, res, next) {
-  const localeHeader = req.headers["accept-language"] || "uz";
-  const supportedLocales = ["uz", "ru", "en"];
-  const userLocale = supportedLocales.includes(localeHeader)
-    ? localeHeader
-    : "uz";
+  const rawLocale = req.headers["accept-language"] || "uz";
+  const userLocale = rawLocale.split("-")[0];
 
   // If error is already an instance of BaseError, return it directly
   if (err instanceof BaseError) {
@@ -30,6 +27,7 @@ module.exports = function (err, req, res, next) {
       locale: userLocale,
     });
   }
+  console.log(err);
 
   // MongoDB duplicate key error
   if (err.code === 11000 && err.keyValue) {
@@ -46,7 +44,6 @@ module.exports = function (err, req, res, next) {
     });
   }
 
-  // Cast error (masalan, noto'g'ri ObjectId)
   if (err.name === "CastError") {
     const notFoundError = BaseError.NotFound("Ma'lumot", userLocale);
     return res.status(notFoundError.status).json({
@@ -57,7 +54,6 @@ module.exports = function (err, req, res, next) {
     });
   }
 
-  // Umumiy server xatosi
   const serverError = BaseError.InternalServerError(userLocale);
   return res.status(serverError.status).json({
     success: false,

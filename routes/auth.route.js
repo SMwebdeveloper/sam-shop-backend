@@ -1,22 +1,39 @@
 const express = require("express");
 const authController = require("../controllers/auth.controller");
-const { body } = require("express-validator");
+const validationResult = require("../middlewares/runValidation.middleware");
+const validationMiddleware = require("../middlewares/validate.middleware");
 const router = express.Router();
 
 router.post(
   "/register",
-  body("email").isEmail(),
-  body("username")
-    .notEmpty()
-    .withMessage("Please enter username")
-    .isLength({ min: 3, max: 10 }),
-  body("password").isLength({ min: 6, max: 10 }),
+  validationMiddleware,
+  validationResult(),
   authController.register
 );
-router.post("/verify", authController.verifyEmail)
-router.post("/login", authController.login)
-router.post("/logout", authController.logout)
-router.post("/reset-password", authController.resetPassword);
-router.put("/recovery-account", authController.recoveryAccount)
-router.get("/refresh", authController.refresh)
+router.post(
+  "/verify",
+   validationMiddleware,
+   validationResult(),
+  authController.verifyEmail
+);
+router.post(
+  "/login",
+  validationMiddleware,
+  validationResult(),
+  authController.login
+);
+router.post("/logout", authController.logout);
+router.post(
+  "/reset-password",
+  validationMiddleware,
+  validationResult(),
+  authController.resetPassword
+);
+router.put(
+  "/recovery-account",
+  validationMiddleware,
+  validationResult(),
+  authController.recoveryAccount
+);
+router.get("/refresh", authController.refresh);
 module.exports = router;

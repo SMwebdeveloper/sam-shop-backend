@@ -1,33 +1,30 @@
-const BaseError = require("../errors/base.error");
 const authService = require("../service/auth.service");
-const { validationResult } = require("express-validator");
 const mailService = require("../service/mail.service");
 const userModel = require("../models/user.model");
 const tokenService = require("../service/token.service");
 class AuthControl {
   async register(req, res, next) {
     try {
-      const errors = validationResult(req);
+      const localeHeader = req.header("accept-language") || "uz";
 
-      if (!errors.isEmpty()) {
-        return next(
-          BaseError.BadRequest("Error with validation", errors.array())
-        );
-      }
-      const user = await authService.register(req.body);
+      const user = await authService.register(req.body, localeHeader);
       res.cookie("refreshToken", user.refreshToken, {
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
       return res.status(200).json(user);
     } catch (error) {
-      console.log(error);
       next(error);
     }
   }
   async verifyEmail(req, res, next) {
     try {
+      const errors = validationResult(req);
       const { email, otp } = req.body;
+
+      if (!errors.isEmpty()) {
+        return;
+      }
       const response = await mailService.verifyOtp(email, otp);
       if (response) {
         const user = await userModel.findOneAndUpdate(
@@ -50,6 +47,7 @@ class AuthControl {
       });
       return res.status(200).json(user);
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
