@@ -2,18 +2,11 @@ const { Schema } = require("mongoose");
 
 const PriceSchema = new Schema(
   {
-    basePrice: {
+    amount: {
       type: Number,
       required: true,
       min: 0,
       set: (v) => parseFloat(v.toFixed(2)), // 2 xona aniqlik
-    },
-    currency: {
-      type: String,
-      required: true,
-      default: "UZS",
-      enum: ["UZS", "USD", "EUR"],
-      uppercase: true,
     },
     discount: {
       type: {
