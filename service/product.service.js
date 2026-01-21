@@ -5,7 +5,7 @@ const {
   HomeProduct,
   BeautyProduct,
   OtherProduct,
-} = require("../models/Product/index");
+} = require("../models/product/index");
 const localizeProduct = require("../utils/localizeProduct");
 const BaseError = require("../errors/base.error");
 const { generateUniqueSlug } = require("../utils/slugify");
@@ -125,7 +125,7 @@ class ProductService {
 
       // Mahalliylashtirish
       const localizedProducts = products.map((product) =>
-        localizeProduct(product, language)
+        localizeProduct(product, language),
       );
       // Umumiy productlar sonitotalPages
       const totalProducts = await Product.countDocuments(filter);
@@ -219,7 +219,7 @@ class ProductService {
 
     // exist user
     const existingRating = product.ratings.find(
-      (r) => r.userId.toString() === userId
+      (r) => r.userId.toString() === userId,
     );
     if (existingRating) {
       throw BaseError.BadRequest("You have already rated this product");
@@ -231,7 +231,7 @@ class ProductService {
           ratings: { userId, rating },
         },
       },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedProduct) {
@@ -242,7 +242,7 @@ class ProductService {
     const totalRating = updatedProduct.ratings.length;
     const sumRating = updatedProduct.ratings.reduce(
       (sum, r) => sum + r.rating,
-      0
+      0,
     );
     const averageRating = sumRating / totalRating;
     // Faqat averageRating ni yangilash

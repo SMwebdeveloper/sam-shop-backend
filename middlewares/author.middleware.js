@@ -1,5 +1,5 @@
 const BaseError = require("../errors/base.error");
-const { Product } = require("../models/Product/product.model");
+const { Product } = require("../models/product/product.model");
 
 module.exports = async function (req, res, next) {
   try {

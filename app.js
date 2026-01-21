@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const authRoute = require("./routes/auth.route");
 const productRoute = require("./routes/product.route")
 const fileRoute = require("./routes/file.route")
+const cateogoryRoute = require("./routes/category.route")
 const cookieParser = require("cookie-parser")
 const fileupload = require("express-fileupload")
 const errorMiddleware = require("./middlewares/error.middleware");
@@ -19,6 +20,8 @@ app.use(fileupload())
 app.use('/api/auth', authRoute)
 app.use("/api/product", productRoute)
 app.use("/api/media-file", fileRoute)
+app.use("/api/category", cateogoryRoute)
+
 
 app.use(errorMiddleware)
 
