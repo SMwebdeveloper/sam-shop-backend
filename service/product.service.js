@@ -183,6 +183,8 @@ class ProductService {
 
   async productById(id) {
     const product = await Product.findById(id);
+
+    if(!product) throw BaseError.NotFound()
     return product;
   }
 
@@ -191,11 +193,7 @@ class ProductService {
       throw BaseError.BadRequest("Id not found");
     }
 
-    const isProduct = await this.productById(id);
-
-    if (!isProduct) {
-      throw BaseError.BadRequest("Product not found");
-    }
+    await this.productById(id)
 
     const updateProduct = await Product.findByIdAndUpdate(id, data, {
       new: true,

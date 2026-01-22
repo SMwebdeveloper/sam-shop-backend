@@ -6,32 +6,32 @@ const router = express.Router();
 
 router.post(
   "/register",
-  validationMiddleware,
+  validationMiddleware("auth"),
   validationResult(),
   authController.register
 );
 router.post(
   "/verify",
-   validationMiddleware,
+   validationMiddleware("auth"),
    validationResult(),
   authController.verifyEmail
 );
 router.post(
   "/login",
-  validationMiddleware,
+  validationMiddleware("auth"),
   validationResult(),
   authController.login
 );
 router.post("/logout", authController.logout);
 router.post(
   "/reset-password",
-  validationMiddleware,
+  validationMiddleware("auth"),
   validationResult(),
   authController.resetPassword
 );
 router.put(
   "/recovery-account",
-  validationMiddleware,
+  validationMiddleware("auth"),
   validationResult(),
   authController.recoveryAccount
 );

@@ -5,7 +5,6 @@ const i18n = require("../utils/i18n");
 const authValidations = {
   register: (locale) => {
     const lang = getLanguage(locale);
-    console.log(lang)
     const t = i18n(lang, "auth");
 
     return [
