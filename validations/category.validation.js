@@ -8,9 +8,9 @@ const categoryValidations = {
     const t = i18n(lang, "category");
 
     return [
-      body("name").isEmpty().withMessage(t("category_name")),
+      body("name").notEmpty().withMessage(t("category_name")),
 
-      body("sub_categories").isEmpty().withMessage(t("sub_category_name")),
+      body("sub_categories").notEmpty().withMessage(t("sub_category_name")),
     ];
   },
   updateCategory: (locale) => {
@@ -18,9 +18,9 @@ const categoryValidations = {
     const t = i18n(lang, "category");
 
     return [
-      body("name").isEmpty().withMessage(t("category_name")),
+      body("name").notEmpty().withMessage(t("category_name")),
 
-      body("sub_categories").isEmpty().withMessage(t("sub_category_name")),
+      body("sub_categories").notEmpty().withMessage(t("sub_category_name")),
     ];
   },
 };

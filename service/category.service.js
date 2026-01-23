@@ -20,9 +20,10 @@ class CategoryService {
     }));
   }
   async createCategory(data, lang) {
-    const existingCategory = Category.find({ slug: data.slug });
-
-    if (existingCategory) {
+    const slug = data.name.en.toLowerCase().replace(/\s+/g, "-");
+    const existingCategory = await Category.find({ slug });
+    console.log(existingCategory);
+    if (existingCategory.length > 0) {
       const messages = {
         uz: "Bu nom bilan categoriya mavjud iltimos boshqa nom tanglang",
         ru: "Категория с таким названием уже существует, пожалуйста, выберите другое название.",
@@ -33,7 +34,6 @@ class CategoryService {
       throw BaseError.Conflict(message, lang);
     }
 
-    const slug = data.name.en.toLowerCase().replace(/\s+/g, "-");
     const processedSubCategories = data.sub_categories.map((sub) => {
       if (!sub.name.en || !sub.name.uz || !sub.name.ru) {
         return false;
@@ -66,7 +66,7 @@ class CategoryService {
     return category;
   }
   async updateCategory(data, id, lang) {
-    await this.getCategoryById(id);
+    await this.getCategoryById(id, lang);
     if (data.name && data.name.en) {
       data.slug = data?.name?.en.toLowerCase().replace(/\s+/g, "-");
     }
@@ -76,7 +76,43 @@ class CategoryService {
       runValidators: true,
     });
 
-    return category
+    return category;
+  }
+
+  async deleteCategory(id, lang) {
+    await this.getCategoryById(id, lang);
+
+    const deletedCategory = await Category.findByIdAndDelete(id);
+
+    return {
+      success: true,
+      message: "This category successfully deleted",
+      data: deletedCategory,
+    };
+  }
+  async archivedCategory(id, lang) {
+    const category = await Category.findById(id);
+
+    if (!category) {
+      throw BaseError.NotFound(_, lang);
+    }
+
+    if (category.isActive === false) {
+      return {
+        message: "This category already archived",
+      };
+    }
+
+    const updateCategory = await Category.findByIdAndUpdate(id, {
+      ...category,
+      isActive: false,
+    });
+
+    return {
+      success: true,
+      message: "This category successfully archived",
+      data: updateCategory,
+    };
   }
 }
 

@@ -13,9 +13,11 @@ router.post(
   categoryController.createCategory,
 );
 router.put(
-  "/update-category",
+  "/update-category/:id",
   validationMiddleware("category"),
   validationResult(),
   categoryController.updateCategory,
 );
+router.delete("/archived/:id", categoryController.archivedCategory);
+router.delete("/delete/:id", categoryController.deleteCategory);
 module.exports = router;

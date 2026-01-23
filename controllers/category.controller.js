@@ -44,6 +44,27 @@ class CategoriesController {
       next(error);
     }
   }
+
+  async deleteCategory(req, res, next) {
+    try {
+      const lang = req.headers["accept-language"] || "uz";
+      const { id } = req.params;
+      const response = await categoryService.deleteCategory(id, lang);
+      res.status(500).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async archivedCategory(req, res, next) {
+    try {
+      const lang = req.headers["accept-language"] || "uz"
+      const {id} = req.params
+      const response = await categoryService.archivedCategory(id, lang)
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 module.exports = new CategoriesController();
