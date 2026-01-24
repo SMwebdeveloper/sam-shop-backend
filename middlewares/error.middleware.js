@@ -13,6 +13,7 @@ module.exports = function (err, req, res, next) {
       locale: userLocale,
     });
   }
+  console.log(error)
 
   // Validation errors (Mongoose ValidationError or custom errors object)
   if (err.name === "ValidationError" || err.errors) {

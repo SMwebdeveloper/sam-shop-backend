@@ -3,8 +3,7 @@ const productService = require("../service/product.service");
 class ProductController {
   async getAllProducts(req, res, next) {
     try {
-      const language = req.headers["accept-language"] || "uz";
-      const products = await productService.getAllProducts(req.query, language);
+    const products = await productService.getAllProducts(req.query, req.lang);
       res.status(200).json(products);
     } catch (error) {
       next(error);
@@ -47,7 +46,7 @@ class ProductController {
     try {
       const { id } = req.params;
       await productService.delete(id);
-      return res.status(500).json({ success: true });
+      return res.status(200).json({ success: true });
     } catch (error) {
       next(error);
     }

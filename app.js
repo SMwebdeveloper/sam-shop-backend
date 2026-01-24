@@ -1,29 +1,30 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const authRoute = require("./routes/auth.route");
-const productRoute = require("./routes/product.route")
-const fileRoute = require("./routes/file.route")
-const cateogoryRoute = require("./routes/category.route")
-const cookieParser = require("cookie-parser")
-const fileupload = require("express-fileupload")
+const productRoute = require("./routes/product.route");
+const fileRoute = require("./routes/file.route");
+const cateogoryRoute = require("./routes/category.route");
+const cookieParser = require("cookie-parser");
+const fileupload = require("express-fileupload");
 const errorMiddleware = require("./middlewares/error.middleware");
+const langMiddleware = require("./middlewares/language.middleware");
 require("dotenv").config();
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}))
-app.use(cookieParser())
-app.use(express.static("static"))
-app.use(fileupload())
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(express.static("static"));
+app.use(fileupload());
 // routes
-app.use('/api/auth', authRoute)
-app.use("/api/product", productRoute)
-app.use("/api/media-file", fileRoute)
-app.use("/api/category", cateogoryRoute)
+app.use("/api/auth", authRoute);
+app.use("/api/product", productRoute);
+app.use("/api/media-file", fileRoute);
+app.use("/api/category", cateogoryRoute);
 
-
-app.use(errorMiddleware)
+app.use(errorMiddleware);
+app.use(langMiddleware);
 
 const PORT = process.env.PORT || 9090;
 

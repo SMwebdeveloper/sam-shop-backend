@@ -5,9 +5,7 @@ const tokenService = require("../service/token.service");
 class AuthControl {
   async register(req, res, next) {
     try {
-      const localeHeader = req.header("accept-language") || "uz";
-
-      const user = await authService.register(req.body, localeHeader);
+      const user = await authService.register(req.body, req.lang);
       res.cookie("refreshToken", user.refreshToken, {
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000,
