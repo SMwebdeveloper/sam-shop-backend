@@ -20,4 +20,24 @@ router.put(
 );
 router.delete("/archived/:id", categoryController.archivedCategory);
 router.delete("/delete/:id", categoryController.deleteCategory);
+
+router.get("/sub-category/:id", categoryController.getSubCategoryByCategory);
+router.post(
+  "/sub-category/create/:categoryId",
+  validationMiddleware("category"),
+  validationResult(),
+  categoryController.addSubCategory,
+);
+router.put(
+  "/sub-category/update/:categoryId",
+  categoryController.updateSubCategory,
+);
+router.put(
+  "/sub-category/archived/:categoryId/:slug",
+  categoryController.archivedSubCategory,
+);
+router.delete(
+  "/sub-category/delete/:categoryId/:slug",
+  categoryController.deletedSubCategory,
+);
 module.exports = router;

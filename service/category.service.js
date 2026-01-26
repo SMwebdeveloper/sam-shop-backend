@@ -22,7 +22,7 @@ class CategoryService {
   async createCategory(data, lang) {
     const slug = data.name.en.toLowerCase().replace(/\s+/g, "-");
     const existingCategory = await Category.find({ slug });
-    console.log(existingCategory);
+
     if (existingCategory.length > 0) {
       const messages = {
         uz: "Bu nom bilan categoriya mavjud iltimos boshqa nom tanglang",
@@ -97,21 +97,143 @@ class CategoryService {
       throw BaseError.NotFound(_, lang);
     }
 
-    if (category.isActive === false) {
-      return {
-        message: "This category already archived",
-      };
-    }
-
     const updateCategory = await Category.findByIdAndUpdate(id, {
       ...category,
-      isActive: false,
+      isActive: category.isActive ? false : true,
     });
 
     return {
       success: true,
       message: "This category successfully archived",
       data: updateCategory,
+    };
+  }
+
+  // sub categories api
+  async getSubCategoriesByCategory(id, activeOnly, lang) {
+    const category = await Category.findOne({
+      $or: [{ _id: id }, { slug: id }],
+      isActive: true,
+    });
+
+    if (!category) {
+      throw BaseError.NotFound(_, lang);
+    }
+
+    let subCategories = category.sub_categories;
+
+    if (activeOnly === "true") {
+      subCategories = subCategories.find((sub) => sub.isActive);
+    }
+
+    const transformSubCategories = subCategories.map((sub) => ({
+      slug: sub.slug,
+      name: sub.name[lang],
+      isActive: sub.isActive,
+    }));
+    return {
+      success: true,
+      count: transformSubCategories.length,
+      data: transformSubCategories,
+    };
+  }
+
+  async addSubCategory(id, data, lang) {
+    const category = await Category.findById(id);
+
+    if (!category) {
+      throw BaseError.NotFound(_, lang);
+    }
+
+    const existingSubCategory = category.sub_categories.find(
+      (sub) => sub.slug === data.name.en.toLowerCase(),
+    );
+
+    if (existingSubCategory) {
+      throw BaseError.Conflict(_, lang);
+    }
+
+    const slug = data.name.en.toLowerCase().replace(/\s+/g, "-");
+
+    const newSubCategory = {
+      name: data.name,
+      slug,
+      isActive: data.isActive,
+    };
+    category.sub_categories.push(newSubCategory);
+
+    await category.save();
+    return {
+      success: true,
+      data: newSubCategory,
+    };
+  }
+
+  async updateSubCategory(id, data, lang) {
+    const category = await Category.findById(id);
+
+    if (!category) {
+      throw BaseError.NotFound(_, lang);
+    }
+
+    let subCategory = category.sub_categories.find(
+      (sub) => sub.slug === data.slug,
+    );
+
+    if (!subCategory) {
+      throw BaseError.NotFound(_, lang);
+    }
+
+    const slug = data.name.en.toLowerCase().replace(/\s+/g, "-");
+
+    subCategory.name = data.name;
+    subCategory.slug = slug;
+    subCategory.isActive = data.isActive;
+
+    await category.save();
+
+    return {
+      success: true,
+      data: subCategory,
+    };
+  }
+
+  async archivedSubCategory(id, slug, lang) {
+    const category = await Category.findById(id);
+
+    if (!category) {
+      throw BaseError.NotFound(_, lang);
+    }
+
+    const subCategory = category.sub_categories.find(
+      (sub) => sub.slug === slug,
+    );
+
+    subCategory.isActive = subCategory.isActive ? false : true;
+
+    await category.save();
+
+    return {
+      success: true,
+    };
+  }
+
+  async deleteSubCategory(id, slug, lang) {
+    const category = await Category.findById(id);
+
+    if (category.length === 0) {
+      throw BaseError.BadRequest(_, lang);
+    }
+
+    const subCategories = category.sub_categories.filter(
+      (sub) => sub.slug !== slug,
+    );
+
+    await category.save();
+
+    return {
+      success: true,
+      data: subCategories,
     };
   }
 }

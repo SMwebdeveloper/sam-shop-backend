@@ -13,13 +13,12 @@ module.exports = function (err, req, res, next) {
       locale: userLocale,
     });
   }
-  console.log(error)
-
+  // console.log(req)
   // Validation errors (Mongoose ValidationError or custom errors object)
   if (err.name === "ValidationError" || err.errors) {
     const validationError = BaseError.ValidationError(
       err.errors || [],
-      userLocale
+      userLocale,
     );
     return res.status(validationError.status).json({
       success: false,
@@ -35,7 +34,7 @@ module.exports = function (err, req, res, next) {
     const field = Object.keys(err.keyValue)[0];
     const conflictError = BaseError.Conflict(
       `${field} allaqachon mavjud`,
-      userLocale
+      userLocale,
     );
     return res.status(conflictError.status).json({
       success: false,

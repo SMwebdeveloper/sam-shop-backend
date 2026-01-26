@@ -1,7 +1,7 @@
 const SUPPORTED_LANGS = ["uz", "ru", "en"];
 
-module.epxorts = (req, res, next) => {
-  let lang = req.headers["accpet-language"];
+module.exports = (req, res, next) => {
+  let lang = req.headers["accept-language"];
 
   if (!lang) {
     req.lang = "uz";
@@ -15,6 +15,6 @@ module.epxorts = (req, res, next) => {
   }
 
   req.lang = lang;
-
+  console.log(req.lang);
   next();
 };

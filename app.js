@@ -17,14 +17,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static("static"));
 app.use(fileupload());
+
+app.use(errorMiddleware);
+app.use(langMiddleware);
 // routes
 app.use("/api/auth", authRoute);
 app.use("/api/product", productRoute);
 app.use("/api/media-file", fileRoute);
 app.use("/api/category", cateogoryRoute);
 
-app.use(errorMiddleware);
-app.use(langMiddleware);
 
 const PORT = process.env.PORT || 9090;
 
