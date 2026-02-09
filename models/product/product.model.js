@@ -219,7 +219,8 @@ const ProductSchema = new Schema(
     manufacturer: { type: String },
     vendor: {
       type: Schema.Types.ObjectId,
-      required: false,
+      required: true,
+      ref: "Shop"
       validate: {
         validator: function (v) {
           return mongoose.Types.ObjectId.isValid(v);
@@ -263,7 +264,7 @@ const ProductSchema = new Schema(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 //  Virtual Palace
@@ -335,8 +336,69 @@ ProductSchema.pre(
     }
 
     next();
-  }
+  },
 );
+
+ProductSchema.static.updateShopStats = async (shopId) => {
+  if (shopId) return;
+
+  const stats = await this.aggregate([
+    {
+      $match: { vendor: new mongoose.Types.ObjectId(shopId) },
+    },
+    {
+      $group: {
+        _id: "$vendor",
+        avgRating: { $avg: "$averageRating" },
+        totalReviews: { $sum: { $size: "$ratings" } },
+
+        total: { $sum: 1 },
+        active: {
+          $sum: { $cond: [{ $eq: ["$status.en", "active"] }, 1, 0] },
+        },
+        pending: {
+          $sum: { $cond: [{ $eq: ["$status.en", "pending"] }, 1, 0] },
+        },
+        suspended: {
+          $sum: { $cond: [{ $eq: ["$status.en", "suspend"] }, 1, 0] },
+        },
+        closed: {
+          $sum: { $cond: [{ $eq: ["$status.en", "closed"] }, 1, 0] },
+        },
+        outOfStock: {
+          $num: {$cond: [{$lte: ["$inventory.totalQuantity",0]}, 1,0]}
+        }
+      },
+    },
+  ]);
+
+  const Shop = mongoose.model("Shop")
+
+  if (stats.length > 0) {
+    const s = stats[0];
+    await Shop.findByIdAndUpdate(shopId, {
+      "rating.average": parseFloat(s.avgRating.toFixed(1)) || 0,
+      "rating.count": s.totalReviews || 0,
+      "stats.totalProducts": s.total,
+      "stats.activeProducts": s.active,
+      "stats.pendingProducts": s.pending,
+      "stats.suspendedProducts": s.suspended,
+      "stats.closedProducts": s.closed,
+      "stats.outOfStockProducts": s.outOfStock,
+    });
+  }
+};
+
+ProductSchema.post("save", async function () {
+  await this.constructor.updateShopStats(this.vendor);
+});
+
+// Mahsulot o'chirilganda (delete)
+ProductSchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    await mongoose.model("Product").updateShopStats(doc.vendor);
+  }
+});
 const Product = model("Product", ProductSchema);
 
 module.exports = { Product };
