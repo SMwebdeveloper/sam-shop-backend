@@ -220,7 +220,7 @@ const ProductSchema = new Schema(
     vendor: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "Shop"
+      ref: "Shop",
       validate: {
         validator: function (v) {
           return mongoose.Types.ObjectId.isValid(v);
