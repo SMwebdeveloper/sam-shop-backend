@@ -1,6 +1,10 @@
 const jwt = require("jsonwebtoken");
-const tokenModel = require("../models/token.model");
+const mongoose = require("mongoose")
 
+// model
+const tokenModel = mongoose.model("Token")
+
+// token service
 class TokenService {
   generateToken(payload) {
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_KEY, {

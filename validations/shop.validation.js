@@ -1,0 +1,35 @@
+const { body } = require("express-validator");
+const { getLanguage } = require("../utils/getLanguage");
+const i18n = require("../utils/i18n");
+
+function langHelper(lang) {
+  const l = getLanguage(lang);
+  const t = i18n(l, "shop");
+  return { t };
+}
+
+const shopValidations = {
+  create: (locale) => {
+    const { t } = langHelper(locale);
+
+    return [
+      body("name")
+        .notEmpty()
+        .withMessage(t("name"))
+        .bail()
+        .isLength({ min: 2, max: 30 })
+        .withMessage(t("name_length")),
+
+      body("description")
+        .notEmpty()
+        .withMessage(t("description"))
+        .bail()
+        .isLength({ min: 10, max: 300 }),
+
+      body("category").notEmpty().withMessage(t("category")),
+      body("owner").notEmpty().withMessage(t("category")),
+    ];
+  },
+};
+
+module.exports = shopValidations;

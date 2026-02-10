@@ -1,14 +1,21 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+const fileupload = require("express-fileupload");
+
+// router
 const authRoute = require("./routes/auth.route");
 const productRoute = require("./routes/product.route");
 const fileRoute = require("./routes/file.route");
 const cateogoryRoute = require("./routes/category.route");
-const cookieParser = require("cookie-parser");
-const fileupload = require("express-fileupload");
+const shopRouter = require("./routes/shop.route");
+
+// middleware
 const errorMiddleware = require("./middlewares/error.middleware");
 const langMiddleware = require("./middlewares/language.middleware");
+
 require("dotenv").config();
+require("./models")
 
 const app = express();
 
@@ -18,6 +25,7 @@ app.use(cookieParser());
 app.use(express.static("static"));
 app.use(fileupload());
 
+// middleware
 app.use(errorMiddleware);
 app.use(langMiddleware);
 // routes
@@ -25,7 +33,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/product", productRoute);
 app.use("/api/media-file", fileRoute);
 app.use("/api/category", cateogoryRoute);
-
+app.use("/api/shop", shopRouter);
 
 const PORT = process.env.PORT || 9090;
 

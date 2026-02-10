@@ -1,11 +1,13 @@
 // middlewares/validate.middleware.js
 const authValidations = require("../validations/auth.validation");
 const categoryValidations = require("../validations/category.validation")
+const shopValidations = require("../validations/shop.validation")
 const kebabToCamel = require("../utils/caseConvert");
 
 const validationModule = {
   auth: authValidations,
-  category: categoryValidations
+  category: categoryValidations,
+  shop: shopValidations
 };
 const validationMiddleware = (moduleName) => {
   return (req, res, next) => {
@@ -13,7 +15,7 @@ const validationMiddleware = (moduleName) => {
     const validationKey = kebabToCamel(type);
     const moduleValidations = validationModule[moduleName];
     if (moduleValidations[validationKey]) {
-      const locale = req.headers["accept-language"] || "uz";
+      const locale = req.lang
       const validations = moduleValidations[validationKey](locale);
 
       // Validation chain'ni ishga tushirish

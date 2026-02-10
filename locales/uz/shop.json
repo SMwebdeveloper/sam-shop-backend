@@ -1,0 +1,8 @@
+{
+  "name": "Ism talab qilinadi.",
+  "name_length": "Ism uzunligi 2 dan 30 tagacha belgidan iborat bo'lishi kerak.",
+  "description": "Tavsif talab qilinadi",
+  "description_length": "Tavsif kamida 10 ta belgidan iborat bo'lishi kerak.",
+  "category": "Kategoriya talab qilinadi",
+  "owner": "Yaratuvchi talab qilinadi."
+}

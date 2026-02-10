@@ -19,14 +19,15 @@ const shopSchema = new Schema({
       public_id: { type: String },
     },
   },
-  categories: {
+  category: {
     type: Schema.Types.ObjectId,
     ref: "Category",
+    required: true
   },
   desctiption: {
-    uz: { type: String },
-    ru: { type: String },
-    en: { type: String },
+    uz: { type: String, required:true },
+    ru: { type: String, required: true },
+    en: { type: String, required: true },
   },
   owner: {
     type: Schema.Types.ObjectId,
@@ -41,6 +42,7 @@ const shopSchema = new Schema({
     email: {
       type: String,
       lowerCase: true,
+      required: true
     },
     address: {
       uz: { type: String },

@@ -1,5 +1,8 @@
-const Category = require("../models/category.model");
+const mongoose = require("mongoose");
 const BaseError = require("../errors/base.error");
+
+//model
+const Category = mongoose.model("Category");
 class CategoryService {
   async getAllCategories(lang = "uz") {
     let categories = await Category.find({ isActive: true })

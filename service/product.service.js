@@ -1,14 +1,16 @@
-const {
-  Product,
-  ClothingProduct,
-  ElectronicsProduct,
-  HomeProduct,
-  BeautyProduct,
-  OtherProduct,
-} = require("../models/product/index");
+
+const mongoose = require("mongoose");
 const localizeProduct = require("../utils/localizeProduct");
 const BaseError = require("../errors/base.error");
 const { generateUniqueSlug } = require("../utils/slugify");
+
+// product models
+const Product = mongoose.model("Product");
+const ClothingProduct = mongoose.model("ClothingProduct");
+const ElectronicsProduct = mongoose.model("ElectronicsProduct");
+const HomeProduct = mongoose.model("HomeProduct");
+const BeautyProduct = mongoose.model("BeautyProduct");
+const OtherProduct = mongoose.model("OtherProduct");
 
 class ProductService {
   async getAllProducts(queryParameters, language = "uz") {
@@ -184,7 +186,7 @@ class ProductService {
   async productById(id) {
     const product = await Product.findById(id);
 
-    if(!product) throw BaseError.NotFound()
+    if (!product) throw BaseError.NotFound();
     return product;
   }
 
@@ -193,7 +195,7 @@ class ProductService {
       throw BaseError.BadRequest("Id not found");
     }
 
-    await this.productById(id)
+    await this.productById(id);
 
     const updateProduct = await Product.findByIdAndUpdate(id, data, {
       new: true,

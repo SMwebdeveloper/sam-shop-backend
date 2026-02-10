@@ -1,0 +1,8 @@
+{
+    "name": "Name is required",
+    "name_length": "Name must be 2-30 characters long",
+    "description": "Description is required",
+    "description_length": "Description must be minimum 10 characters long",
+    "category": "Category is required",
+    "owner": "Owner is required"
+}

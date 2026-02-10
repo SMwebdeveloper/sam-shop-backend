@@ -1,7 +1,10 @@
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
-const otpModel = require("../models/otp.model");
+const mongoose = require("mongoose")
 const BaseError = require("../errors/base.error");
+
+// model
+const otpModel = mongoose.model("Otp")
 
 class MailService {
   constructor() {

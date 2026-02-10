@@ -1,9 +1,14 @@
 const bcrypt = require("bcryptjs");
-const userModel = require("../models/user.model")
+const mongoose = require("mongoose");
 const BaseError = require("../errors/base.error");
 const UserDto = require("../dtos/user.dto");
 const mailService = require("./mail.service");
 const tokenService = require("./token.service");
+
+// model
+const userModel = mongoose.model("User");
+
+// auth service
 class AuthService {
   async register(userData, locale) {
     const { username, email, password, role } = userData;
@@ -80,7 +85,7 @@ class AuthService {
     const tokens = tokenService.generateToken({ ...userDto });
     await mailService.sendForgotPassword(
       email,
-      `http://localhost:5173/recovery-account/${tokens.accessToken}`
+      `http://localhost:5173/recovery-account/${tokens.accessToken}`,
     );
     return 200;
   }
