@@ -55,6 +55,7 @@ module.exports = function (err, req, res, next) {
   }
 
   const serverError = BaseError.InternalServerError(userLocale);
+  console.log(err);
   return res.status(serverError.status).json({
     success: false,
     message: serverError.message,

@@ -5,7 +5,6 @@ const shopSchema = new Schema({
   name: NameSchema,
   slug: {
     type: String,
-    required: true,
     uniqe: true,
     lowercase: true,
   },
@@ -25,9 +24,9 @@ const shopSchema = new Schema({
     required: true
   },
   desctiption: {
-    uz: { type: String, required:true },
-    ru: { type: String, required: true },
-    en: { type: String, required: true },
+    uz: { type: String},
+    ru: { type: String},
+    en: { type: String},
   },
   owner: {
     type: Schema.Types.ObjectId,

@@ -28,6 +28,13 @@ const shopValidations = {
 
       body("category").notEmpty().withMessage(t("category")),
       body("owner").notEmpty().withMessage(t("category")),
+      body("contact.phone").notEmpty().withMessage(t("phone")),
+      body("contact.email")
+        .notEmpty()
+        .withMessage(t("email"))
+        .bail()
+        .isEmail()
+        .withMessage(t("email_invalid")),
     ];
   },
 };

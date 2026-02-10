@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const fileupload = require("express-fileupload");
 
+require("./models")
 // router
 const authRoute = require("./routes/auth.route");
 const productRoute = require("./routes/product.route");
@@ -15,7 +16,6 @@ const errorMiddleware = require("./middlewares/error.middleware");
 const langMiddleware = require("./middlewares/language.middleware");
 
 require("dotenv").config();
-require("./models")
 
 const app = express();
 

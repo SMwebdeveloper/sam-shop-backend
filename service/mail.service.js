@@ -1,10 +1,10 @@
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 const BaseError = require("../errors/base.error");
 
 // model
-const otpModel = mongoose.model("Otp")
+const otpModel = mongoose.model("Otp");
 
 class MailService {
   constructor() {
@@ -22,7 +22,7 @@ class MailService {
   async sendOtp(to) {
     const otp = Math.floor(100000 + Math.random() * 900000);
     const hashedOtp = await bcrypt.hash(otp.toString(), 10);
-    console.log(otp)
+    console.log(otp);
     await otpModel.create({
       email: to,
       otp: hashedOtp,

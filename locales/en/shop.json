@@ -4,5 +4,8 @@
     "description": "Description is required",
     "description_length": "Description must be minimum 10 characters long",
     "category": "Category is required",
-    "owner": "Owner is required"
+    "owner": "Owner is required",
+    "email": "Email is required",
+    "email_invalid": "Email is invalid",
+    "phone": "Phone number is required."
 }
