@@ -7,5 +7,6 @@
   "owner": "Yaratuvchi talab qilinadi.",
   "email": "Email kiritish majburiy",
   "email_invalid": "Email noto'g'ri formatda",
-  "phone": "Telefon raqami kiritilishi majburiy"
+  "phone": "Telefon raqami kiritilishi majburiy",
+  "phone_invalid": "Telefon raqam noto'g'ri formatda"
 }

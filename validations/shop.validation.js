@@ -28,7 +28,12 @@ const shopValidations = {
 
       body("category").notEmpty().withMessage(t("category")),
       body("owner").notEmpty().withMessage(t("category")),
-      body("contact.phone").notEmpty().withMessage(t("phone")),
+      body("contact.phone")
+        .notEmpty()
+        .withMessage(t("phone"))
+        .bail()
+        .matches(/^\+?[1+9]\d{1,14}$/)
+        .withMessage(t("phone_invalid")),
       body("contact.email")
         .notEmpty()
         .withMessage(t("email"))
