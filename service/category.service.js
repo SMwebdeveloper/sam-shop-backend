@@ -63,7 +63,7 @@ class CategoryService {
   async getCategoryById(id, lang) {
     const category = await Category.findById(id);
     if (!category) {
-      throw BaseError.NotFound(_, lang);
+      throw BaseError.NotFound("Category", lang);
     }
 
     return category;

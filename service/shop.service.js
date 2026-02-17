@@ -7,6 +7,67 @@ const Shop = mongoose.model("Shop");
 
 // service class
 class ShopService {
+  async getAllShops(options, lang) {
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      isFeatured,
+      isVerified,
+      category,
+      search,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = options;
+
+    const filter = {};
+
+    if (status) filter.status = status;
+    if (isVerified !== undefined) filter.isVerified = isVerified;
+    if (isFeatured !== undefined) filter.isFeatured = isFeatured; // Typo: isFeatuer -> isFeatured
+    if (category) filter.category = category;
+
+    if (search) {
+      filter.$or = [
+        { "name.uz": { $regex: search, $options: "i" } },
+        { "name.ru": { $regex: search, $options: "i" } },
+        { "name.en": { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // TO'G'RI: MongoDB chain syntax
+    const shops = await Shop.find(filter)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate("category", "name slug")
+      .populate("owner");
+
+    const totalShops = await Shop.countDocuments(filter);
+
+    const messages = {
+      uz: "Ma'lumotlar yuklandi",
+      ru: "Данные загружены",
+      en: "Data loaded",
+    };
+
+    return {
+      success: true,
+      message: messages[lang],
+      data: shops.map((shop) => shop.toJSON({ lang })),
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: totalShops,
+        pages: Math.ceil(totalShops / parseInt(limit)),
+      },
+    };
+  }
   async create(data, ownerId, lang) {
     const existingShop = await Shop.findOne({
       owner: ownerId,
@@ -31,8 +92,8 @@ class ShopService {
       isFeatured: true,
     });
 
-    const savedShop = newShop.save();
-    
+    const savedShop = await newShop.save();
+
     const messages = {
       uz: "Doʻkon muvaffaqiyatli yaratildi",
       en: "Store successfully created",
@@ -44,8 +105,142 @@ class ShopService {
       data: savedShop,
     };
   }
-  async getShopByVendor(vendorId) {
-    if (!vendorId) return;
+
+  async getMyShops(query, lang, ownerId) {
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      isFeatured,
+      isVerified,
+      category,
+      search,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = query;
+
+    const filter = { owner: ownerId };
+
+    if (status) filter.status = status;
+    if (isVerified !== undefined) filter.isVerified = isVerified;
+    if (isFeatured !== undefined) filter.isFeatured = isFeatured; // Typo: isFeatuer -> isFeatured
+    if (category) filter.category = category;
+
+    if (search) {
+      filter.$or = [
+        { "name.uz": { $regex: search, $options: "i" } },
+        { "name.ru": { $regex: search, $options: "i" } },
+        { "name.en": { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // TO'G'RI: MongoDB chain syntax
+    const shops = await Shop.find(filter)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate("category", "name slug")
+      .populate("owner");
+
+    const totalShops = await Shop.countDocuments(filter);
+
+    const messages = {
+      uz: "Ma'lumotlar yuklandi",
+      ru: "Данные загружены",
+      en: "Data loaded",
+    };
+
+    return {
+      success: true,
+      message: messages[lang],
+      data: shops.map((shop) => shop.toJSON({ lang })),
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: totalShops,
+        pages: Math.ceil(totalShops / parseInt(limit)),
+      },
+    };
+  }
+
+  async getShopBySlug(slug, lang) {
+    const existingShop = await Shop.findOne({ slug });
+    if (!existingShop) {
+      throw BaseError.NotFound("Shop", lang);
+    }
+    return {
+      success: true,
+      data: existingShop,
+    };
+  }
+
+  async updateShop(shopId, data, lang, user) {
+    const shop = await Shop.findById(shopId);
+
+    if (!shop) {
+      throw BaseError.NotFound("Shop", lang);
+    }
+
+    if (shop.owner.toString() !== user.id) {
+      throw BaseError.Forbidden(lang);
+    }
+
+    const newSlug = await generateUniqueSlug(Shop, data?.name.en);
+
+    const updatedShop = await Shop.findByIdAndUpdate(
+      shopId,
+      { $set: { ...data, slug: newSlug } }, // update qismi - bu yerda $or ISHLATILMAYDI!
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
+      .populate("category", "name slug")
+      .populate("owner", "firstName lastName email phone");
+
+    // 7. Muvaffaqiyatli javob
+    const messages = {
+      uz: "Do'kon muvaffaqiyatli yangilandi",
+      ru: "Магазин успешно обновлен",
+      en: "Shop updated successfully",
+    };
+
+    return {
+      success: true,
+      message: messages[lang],
+      data: updatedShop,
+    };
+  }
+
+  async deleteShop(id, userId, lang) {
+    if (!id) {
+      throw BaseError.BadRequest(_, lang);
+    }
+    const shop = await Shop.findById(id);
+
+    if (!shop) {
+      throw BaseError.NotFound("Shop", lang);
+    }
+    console.log(shop.owner);
+    console.log(userId);
+    if (String(shop.owner) !== userId) {
+      throw BaseError.Forbiden(lang);
+    }
+    await shop.deleteOne();
+    const messages = {
+      uz: "Do'kon muvaffaqiyatli o'chirildi",
+      ru: "Магазин успешно удалён.",
+      en: "The store was successfully deleted.",
+    };
+    return {
+      success: true,
+      message: messages[lang],
+    };
   }
 }
 

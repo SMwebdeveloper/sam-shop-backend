@@ -15,6 +15,5 @@ module.exports = (req, res, next) => {
   }
 
   req.lang = lang;
-  console.log(req.lang);
   next();
 };

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const fileupload = require("express-fileupload");
 
-require("./models")
+require("./models");
 // router
 const authRoute = require("./routes/auth.route");
 const productRoute = require("./routes/product.route");
@@ -26,7 +26,6 @@ app.use(express.static("static"));
 app.use(fileupload());
 
 // middleware
-app.use(errorMiddleware);
 app.use(langMiddleware);
 // routes
 app.use("/api/auth", authRoute);
@@ -35,6 +34,7 @@ app.use("/api/media-file", fileRoute);
 app.use("/api/category", cateogoryRoute);
 app.use("/api/shop", shopRouter);
 
+app.use(errorMiddleware);
 const PORT = process.env.PORT || 9090;
 
 const startProject = async () => {

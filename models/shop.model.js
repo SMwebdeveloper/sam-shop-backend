@@ -6,7 +6,7 @@ const shopSchema = new Schema(
     name: NameSchema,
     slug: {
       type: String,
-      uniqe: true,
+      unique: true,
       lowercase: true,
     },
     media: {
@@ -106,98 +106,73 @@ const shopSchema = new Schema(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret, options) => {
+        const lang = options.lang || "uz";
+        if (ret.name) ret.name = ret.name[lang] || ret.name["uz"];
+        if (ret.description)
+          ret.description = ret.description[lang] || ret.description["uz"];
+        if (ret.contact.address)
+          ret.contact.address = ret.address[lang] || red.address["uz"];
+        
+        return ret;
+      },
+    },
     toObject: { virtuals: true },
   },
 );
 
-// Get shops by owner and pagination
-shopSchema.static.findByOwner = function (ownerId, options = {}) {
-  const { page = 1, limit = 10, status, isVerified, isFeatured } = options;
-  const skip = (page - 1) * limit;
-
-  const filter = { owner: ownerId };
-  if (status) filter.status = status;
-  if (isVerified !== undefined) filter.isVerified = isVerified;
-  if (isFeatured !== undefined) filter.isFeatured = isFeatured;
-
-  return this.find(filter)
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .populate("category", "name slug")
-    .populate("owner", "firstName lantName email phone");
-};
-
-// Get active shop
-shopSchema.statics.findFeatured = function (limit = 10) {
-  return this.find({ isFeatured: true, status: "active" })
-    .sort({ "rating.average": -1 })
-    .limit(limit);
-};
-
-shopSchema.static.search = function (query, page = 1, limit = 20) {
-  return this.find({
-    status: "active",
-    isVerified: true,
-    $or: [
-      {
-        "name.uz": { $regex: query, options: i },
-        "name.ru": { $regex: query, options: i },
-        "name.en": { $regex: query, options: i },
-      },
-    ],
-  }).skip((page - 1) * limit).limit(limit).populate('category', 'name')
-};
-
 // ========= Instance methods =========
-
 // activate shop
-shopSchema.methods.activate = function() {
-  this.status = 'active';
-  this.isVerified = true
-  return this.save()
-}
+shopSchema.methods.activate = function () {
+  this.status = "active";
+  this.isVerified = true;
+  return this.save();
+};
 
 // close shop
-shopSchema.methods.close = function() {
-  this.status = 'closed'
-  return this.save()
-}
+shopSchema.methods.close = function () {
+  this.status = "closed";
+  return this.save();
+};
 
 // ========= Virtual fielads =========
-shopSchema.virtual("mainName").get(function() {
-  return this.name?.uz || this.name?.ru || this.name?.en || 'No name'
-})
+shopSchema.virtual("mainName").get(function () {
+  return this.name?.uz || this.name?.ru || this.name?.en || "No name";
+});
 
-shopSchema.virtual("mainDescription").get(function() {
-  return this.description?.uz || this.description?.ru || this.description?.en || "No description"
-})
+shopSchema.virtual("mainDescription").get(function () {
+  return (
+    this.description?.uz ||
+    this.description?.ru ||
+    this.description?.en ||
+    "No description"
+  );
+});
 
-shopSchema.virtual("isActive").get(function() {
-  return this.status === 'active' && this.isVerified
-})
+shopSchema.virtual("isActive").get(function () {
+  return this.status === "active" && this.isVerified;
+});
 
 // ======== Middleware =========
-shopSchema.pre('save', async function(next) {
-  if(this.isNew) {
-    this.status = 'pending',
-    this.isVerified = false
+shopSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    ((this.status = "pending"), (this.isVerified = false));
   }
 
-  if(this.contact?.email) {
-    this.contact?.email = this.contact.email.toLowerCase()
+  if (this.contact.email) {
+    this.contact.email = this.contact.email.toLowerCase();
   }
 
-  next()
-})
-
+  next();
+});
 
 // ======== Indexes ========
-shopSchema.index({slug:1}, {unique: true})
-shopSchema.index({owner: 1, createdAt: -1})
-shopSchema.index({status: 1, isVerified: 1})
-shopSchema.index({category: 1, status: 1})
-shopSchema.index({'rating.average': - 1})
+// shopSchema.index({ slug: 1 }, { unique: true });
+shopSchema.index({ owner: 1, createdAt: -1 });
+shopSchema.index({ status: 1, isVerified: 1 });
+shopSchema.index({ category: 1, status: 1 });
+shopSchema.index({ "rating.average": -1 });
 
 module.exports = model("Shop", shopSchema);
