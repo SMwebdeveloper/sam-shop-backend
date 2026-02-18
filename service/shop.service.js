@@ -226,8 +226,6 @@ class ShopService {
     if (!shop) {
       throw BaseError.NotFound("Shop", lang);
     }
-    console.log(shop.owner);
-    console.log(userId);
     if (String(shop.owner) !== userId) {
       throw BaseError.Forbiden(lang);
     }
@@ -241,6 +239,51 @@ class ShopService {
       success: true,
       message: messages[lang],
     };
+  }
+
+  async changeStatus(slug, data, lang) {
+    const shop = await Shop.findOne({ slug });
+
+    if (!shop) {
+      throw BaseError.NotFound("Shop", lang);
+    }
+
+    switch (data.status) {
+      case "active":
+        await shop.activate();
+        break;
+      case "suspend":
+        await shop.suspend();
+        break;
+      case "close":
+        await shop.close();
+        break;
+      default:
+        shop.status = data.status;
+        await shop.save()
+    }
+    const messages = {
+      active: {
+        uz: "Do'kon faollashtirildi",
+        ru: "Магазин активирован",
+        en: "Store activated",
+      },
+      close: {
+        uz: "Do'kon yopildi",
+        en: "The store is closed",
+        ru: "Магазин закрыт",
+      },
+      suspend: {
+        uz: "Do'kon faoliyati to'xtatildi",
+        en: "The store was suspend",
+        ru: "Работа магазина была приостановлена.",
+      },
+    };
+
+    return {
+      success: true,
+      message: messages[data.status][lang]
+    }
   }
 }
 

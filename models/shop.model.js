@@ -137,6 +137,11 @@ shopSchema.methods.close = function () {
   return this.save();
 };
 
+// suspend shop
+shopSchema.methods.suspend = function () {
+  this.status = 'suspend'
+  return this.save()
+}
 // ========= Virtual fielads =========
 shopSchema.virtual("mainName").get(function () {
   return this.name?.uz || this.name?.ru || this.name?.en || "No name";

@@ -63,7 +63,15 @@ class ShopController {
       const response = await shopService.deleteShop(id, req.user.id, req.lang)
       return res.status(200).json(response)
     } catch (error) {
-      console.log(error)
+      next(error)
+    }
+  }
+  async changeStatus(req, res, next) {
+    try {
+     const {slug} = req.params
+     const response = await shopService.changeStatus(slug, req.body, req.lang)
+     return res.status(200).json(response)
+    } catch (error) {
       next(error)
     }
   }

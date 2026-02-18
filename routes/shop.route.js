@@ -1,5 +1,5 @@
 const express = require("express");
-const shopController = require("../controllers/shop.controller")
+const shopController = require("../controllers/shop.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
 const validateMiddleware = require("../middlewares/validate.middleware");
 const validationResult = require("../middlewares/runValidation.middleware");
@@ -7,7 +7,7 @@ const validationResult = require("../middlewares/runValidation.middleware");
 const router = express.Router();
 router.get("/all", shopController.getAllShops);
 router.get("/by-owner", authMiddleware, shopController.getShopByOnwer);
-router.get("/:slug", shopController.getShopBySlug)
+router.get("/:slug", shopController.getShopBySlug);
 router.post(
   "/create",
   authMiddleware,
@@ -24,5 +24,10 @@ router.put(
   shopController.updateShop,
 );
 
-router.delete("/delete/:id", authMiddleware, shopController.deleteShop)
+router.delete("/delete/:id", authMiddleware, shopController.deleteShop);
+router.patch(
+  "/status-change/:slug",
+  authMiddleware,
+  shopController.changeStatus,
+);
 module.exports = router;
