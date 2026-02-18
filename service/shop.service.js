@@ -242,6 +242,9 @@ class ShopService {
   }
 
   async changeStatus(slug, data, lang) {
+    if (!slug) {
+      throw BaseError.BadRequest(_, lang);
+    }
     const shop = await Shop.findOne({ slug });
 
     if (!shop) {
@@ -260,7 +263,7 @@ class ShopService {
         break;
       default:
         shop.status = data.status;
-        await shop.save()
+        await shop.save();
     }
     const messages = {
       active: {
@@ -282,8 +285,8 @@ class ShopService {
 
     return {
       success: true,
-      message: messages[data.status][lang]
-    }
+      message: messages[data.status][lang],
+    };
   }
 }
 
