@@ -8,5 +8,6 @@
     "email": "Email is required",
     "email_invalid": "Email is invalid",
     "phone": "Phone number is required.",
-    "phone_invalid": "The phone number is in the wrong format."
+    "phone_invalid": "The phone number is in the wrong format.",
+    "status": "Status is required"
 }

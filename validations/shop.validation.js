@@ -167,6 +167,11 @@ const shopValidations = {
         .withMessage(t("email_invalid")),
     ];
   },
+  statusChange: (locale) => {
+    const { t } = langHelper(locale);
+
+    return [body("status").notEmpty().withMessage(t("status"))];
+  },
 };
 
 module.exports = shopValidations;

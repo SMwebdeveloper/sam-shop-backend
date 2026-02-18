@@ -4,6 +4,7 @@ const authMiddleware = require("../middlewares/auth.middleware");
 const validateMiddleware = require("../middlewares/validate.middleware");
 const validationResult = require("../middlewares/runValidation.middleware");
 
+const validateModule = 'shop'
 const router = express.Router();
 router.get("/all", shopController.getAllShops);
 router.get("/by-owner", authMiddleware, shopController.getShopByOnwer);
@@ -11,7 +12,7 @@ router.get("/:slug", shopController.getShopBySlug);
 router.post(
   "/create",
   authMiddleware,
-  validateMiddleware("shop"),
+  validateMiddleware(validateModule),
   validationResult(),
   shopController.createShop,
 );
@@ -19,7 +20,7 @@ router.post(
 router.put(
   "/update/:id",
   authMiddleware,
-  validateMiddleware("shop"),
+  validateMiddleware(validateModule),
   validationResult(),
   shopController.updateShop,
 );
@@ -27,6 +28,8 @@ router.put(
 router.delete("/delete/:id", authMiddleware, shopController.deleteShop);
 router.patch(
   "/status-change/:slug",
+  validateMiddleware(validateModule),
+  validationResult(),
   authMiddleware,
   shopController.changeStatus,
 );
