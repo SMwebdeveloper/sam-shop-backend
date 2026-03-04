@@ -3,37 +3,37 @@ const authController = require("../controllers/auth.controller");
 const validationResult = require("../middlewares/runValidation.middleware");
 const validationMiddleware = require("../middlewares/validate.middleware");
 const router = express.Router();
-
+const moduleName = "auth";
 router.post(
   "/register",
-  validationMiddleware("auth"),
+  validationMiddleware(moduleName),
   validationResult(),
-  authController.register
+  authController.register,
 );
 router.post(
   "/verify",
-   validationMiddleware("auth"),
-   validationResult(),
-  authController.verifyEmail
+  validationMiddleware(moduleName),
+  validationResult(),
+  authController.verifyEmail,
 );
 router.post(
   "/login",
-  validationMiddleware("auth"),
+  validationMiddleware(moduleName),
   validationResult(),
-  authController.login
+  authController.login,
 );
 router.post("/logout", authController.logout);
 router.post(
   "/reset-password",
-  validationMiddleware("auth"),
+  validationMiddleware(moduleName),
   validationResult(),
-  authController.resetPassword
+  authController.resetPassword,
 );
 router.put(
   "/recovery-account",
-  validationMiddleware("auth"),
+  validationMiddleware(moduleName),
   validationResult(),
-  authController.recoveryAccount
+  authController.recoveryAccount,
 );
 router.get("/refresh", authController.refresh);
 module.exports = router;

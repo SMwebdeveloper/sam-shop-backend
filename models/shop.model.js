@@ -115,7 +115,11 @@ const shopSchema = new Schema(
           ret.description = ret.description[lang] || ret.description["uz"];
         if (ret.contact.address)
           ret.contact.address = ret.address[lang] || red.address["uz"];
-        
+        if(ret.category.name) ret.category.name = ret.category[lang] || ret.category.name['uz']
+        if(ret.meta.title) ret.meta.title = ret.meta.title[lang] || ret.meta.title['uz']
+        if(ret.meta.description) ret.meta.description = ret.meta.description[lang] || ret.meta.description['uz']
+        if (ret.meta.keywords)
+          ret.meta.keywords = ret.meta.keywords[lang] || ret.meta.keywords["uz"];
         return ret;
       },
     },

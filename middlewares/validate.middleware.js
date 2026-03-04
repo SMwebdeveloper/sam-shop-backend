@@ -2,12 +2,14 @@
 const authValidations = require("../validations/auth.validation");
 const categoryValidations = require("../validations/category.validation");
 const shopValidations = require("../validations/shop.validation");
+const orderValidations = require("../validations/order.validation")
 const kebabToCamel = require("../utils/caseConvert");
 
 const validationModule = {
   auth: authValidations,
   category: categoryValidations,
   shop: shopValidations,
+  order: orderValidations
 };
 const validationMiddleware = (moduleName) => {
   return (req, res, next) => {

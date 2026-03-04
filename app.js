@@ -10,6 +10,7 @@ const productRoute = require("./routes/product.route");
 const fileRoute = require("./routes/file.route");
 const cateogoryRoute = require("./routes/category.route");
 const shopRouter = require("./routes/shop.route");
+const orderRouter = require("./routes/order.route")
 
 // middleware
 const errorMiddleware = require("./middlewares/error.middleware");
@@ -33,6 +34,7 @@ app.use("/api/product", productRoute);
 app.use("/api/media-file", fileRoute);
 app.use("/api/category", cateogoryRoute);
 app.use("/api/shop", shopRouter);
+app.use("/api/order", orderRouter)
 
 app.use(errorMiddleware);
 const PORT = process.env.PORT || 9090;

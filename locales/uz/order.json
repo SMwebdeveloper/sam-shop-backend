@@ -1,0 +1,19 @@
+{
+  "product_required": "Kamida 1ta mahsulotni kiriting",
+  "user_required": "Mijoz ID sini kiritish majburiy",
+  "quantity_required": "Mahsulot sonini kiritish majburiy",
+  "product_name": "Mahsulot nomini kiriting",
+  "product_price": "Mahsulot narhini kiriting",
+  "address_required": "Manzil kiritilishi majburiy",
+  "city_required": "Shaharni kiritilishi majburiy",
+  "post_required": "Pochta kodini kiritish majburiy",
+  "phone_required": "Telefon raqami kiritilishi majburiy",
+  "payment_method": "To'lov turini tanlash majburiy",
+  "item_price": "Mahsulotlarni qoshilgan summasi kiritilishi majburiy",
+  "shippin_price": "Yetkazib berish summasi kiritilishi shart",
+  "total_price": "Mahsulotlarni to'liq summasi kiritilishi majburiy",
+  "is_paid": "To'langanlik haqidagi qator kiritilishi kerak",
+  "order_status": "Buyurtma statusi kiritilishi majburiy",
+  "reason": "Sabab kiritilishi majburiy",
+  "return_status": "Qaytarilingan buyurtmani statusini kiritish majburiy"
+}

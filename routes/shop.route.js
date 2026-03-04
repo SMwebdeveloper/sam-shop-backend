@@ -4,7 +4,7 @@ const authMiddleware = require("../middlewares/auth.middleware");
 const validateMiddleware = require("../middlewares/validate.middleware");
 const validationResult = require("../middlewares/runValidation.middleware");
 
-const validateModule = 'shop'
+const validateModule = "shop";
 const router = express.Router();
 router.get("/all", shopController.getAllShops);
 router.get("/by-owner", authMiddleware, shopController.getShopByOnwer);

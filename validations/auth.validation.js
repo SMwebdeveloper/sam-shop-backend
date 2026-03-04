@@ -1,11 +1,9 @@
 const { body } = require("express-validator");
-const { getLanguage } = require("../utils/getLanguage");
 const i18n = require("../utils/i18n");
 
 const authValidations = {
   register: (locale) => {
-    const lang = getLanguage(locale);
-    const t = i18n(lang, "auth");
+    const t = i18n(locale, "auth");
 
     return [
       body("username")
@@ -31,8 +29,7 @@ const authValidations = {
     ];
   },
   login: (locale) => {
-    const lang = getLanguage(locale);
-    const t = i18n(lang, "auth");
+    const t = i18n(locale, "auth");
 
     return [
       body("email")
@@ -51,8 +48,7 @@ const authValidations = {
     ];
   },
   resetPassword: (locale) => {
-    const lang = locale?.split("-")[0]?.toLowerCase() || "uz";
-    const t = i18n(lang, "auth");
+    const t = i18n(locale, "auth");
 
     return [
       body("email")
@@ -64,8 +60,7 @@ const authValidations = {
     ];
   },
   verify: (locale) => {
-    const lang = getLanguage(locale);
-    const t = i18n(lang, "auth");
+    const t = i18n(locale, "auth");
     return [
       body("email")
         .notEmpty()
@@ -85,8 +80,7 @@ const authValidations = {
     ];
   },
   recoveryAccount: (locale) => {
-    const lang = getLanguage(locale);
-    const t = i18n(lang, "auth");
+    const t = i18n(locale, "auth");
 
     return [
       body("token").notEmpty()

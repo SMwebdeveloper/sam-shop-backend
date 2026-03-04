@@ -1,16 +1,9 @@
 const { body } = require("express-validator");
-const { getLanguage } = require("../utils/getLanguage");
 const i18n = require("../utils/i18n");
-
-function langHelper(lang) {
-  const l = getLanguage(lang);
-  const t = i18n(l, "shop");
-  return { t };
-}
 
 const shopValidations = {
   create: (locale) => {
-    const { t } = langHelper(locale);
+    const t = i18n(locale, "shop");
 
     return [
       body("name")
@@ -89,7 +82,7 @@ const shopValidations = {
     ];
   },
   update: (locale) => {
-    const { t } = langHelper(locale);
+    const t = i18n(locale, "shop");
 
     return [
       body("name")
@@ -168,7 +161,7 @@ const shopValidations = {
     ];
   },
   statusChange: (locale) => {
-    const { t } = langHelper(locale);
+    const t = i18n(locale, "shop");
 
     return [body("status").notEmpty().withMessage(t("status"))];
   },

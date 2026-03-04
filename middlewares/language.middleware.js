@@ -1,3 +1,4 @@
+const { getLanguage } = require("../utils/getLanguage");
 const SUPPORTED_LANGS = ["uz", "ru", "en"];
 
 module.exports = (req, res, next) => {
@@ -8,8 +9,8 @@ module.exports = (req, res, next) => {
     return next();
   }
 
-  lang = lang.split(",")[0].split("-")[0];
-
+  lang = getLanguage(lang);
+   
   if (!SUPPORTED_LANGS.includes(lang)) {
     lang = "uz";
   }

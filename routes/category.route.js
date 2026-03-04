@@ -3,18 +3,18 @@ const categoryController = require("../controllers/category.controller");
 const validationMiddleware = require("../middlewares/validate.middleware");
 const validationResult = require("../middlewares/runValidation.middleware");
 const router = express.Router();
-
+const moduleName = "category";
 router.get("/all", categoryController.getAllCategories);
 router.get("/:id", categoryController.getCategoryById);
 router.post(
   "/create",
-  validationMiddleware("category"),
+  validationMiddleware(moduleName),
   validationResult(),
   categoryController.createCategory,
 );
 router.put(
   "/update-category/:id",
-  validationMiddleware("category"),
+  validationMiddleware(moduleName),
   validationResult(),
   categoryController.updateCategory,
 );
@@ -24,7 +24,7 @@ router.delete("/delete/:id", categoryController.deleteCategory);
 router.get("/sub-category/:id", categoryController.getSubCategoryByCategory);
 router.post(
   "/sub-category/create/:categoryId",
-  validationMiddleware("category"),
+  validationMiddleware(moduleName),
   validationResult(),
   categoryController.addSubCategory,
 );
