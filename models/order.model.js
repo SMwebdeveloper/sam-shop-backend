@@ -47,7 +47,7 @@ const orderSchema = new Schema(
     },
     paymentResult: {
       id: String,
-      status: String,
+      status: {type: String, enum: ['completed', 'proccessing'], default: "proccessing"},
       update_time: String,
       email_address: String,
     },
@@ -128,18 +128,18 @@ const orderSchema = new Schema(
   },
   {
     timestamps: true,
-    toJSON: {
-      transform: (doc, ret, options) => {
-        const lang = options.lang || "uz";
-        if(ret.product.name){
-          ret.product.name = ret.product.name[lang] || ret.product.name['uz']
-        }
-        if(ret.shop.name) {
-          ret.shop.name = ret.shop.name[lang] || ret.shop.name['uz']
-        }
-        return ret
-      },
+  toJSON: {
+    transform: (doc, ret, options) => {
+      const lang = options.lang || "uz";
+      if(ret.product.name){
+        ret.product.name = ret.product.name[lang] || ret.product.name['uz']
+      }
+      if(ret.shop.name) {
+        ret.shop.name = ret.shop.name[lang] || ret.shop.name['uz']
+      }
+      return ret
     },
+  },
   },
 );
 

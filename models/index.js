@@ -3,5 +3,5 @@ require("./otp.model");
 require("./token.model");
 require("./shop.model");
 require("./category.model");
-
 require("./product");
+require("./order.model");

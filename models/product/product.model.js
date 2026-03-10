@@ -230,24 +230,10 @@ const ProductSchema = new Schema(
 
     // Boshqaruv va status
     status: {
-      uz: {
-        type: String,
-        enum: ["qoralama", "faol", "nofaol", "arxivlangan"],
-        default: "qoralama",
-        index: true,
-      },
-      ru: {
-        type: String,
-        enum: ["черновик", "активный", "неактивный", "архивировано"],
-        default: "черновик",
-        index: true,
-      },
-      en: {
-        type: String,
-        enum: ["draft", "active", "inactive", "archived"],
-        default: "draft",
-        index: true,
-      },
+      type: String,
+      enum: ["draft", "active", "inactive", "archived"],
+      default: "draft",
+      index: true,
     },
     featured: {
       type: Boolean,
@@ -366,13 +352,13 @@ ProductSchema.static.updateShopStats = async (shopId) => {
           $sum: { $cond: [{ $eq: ["$status.en", "closed"] }, 1, 0] },
         },
         outOfStock: {
-          $num: {$cond: [{$lte: ["$inventory.totalQuantity",0]}, 1,0]}
-        }
+          $num: { $cond: [{ $lte: ["$inventory.totalQuantity", 0] }, 1, 0] },
+        },
       },
     },
   ]);
 
-  const Shop = mongoose.model("Shop")
+  const Shop = mongoose.model("Shop");
 
   if (stats.length > 0) {
     const s = stats[0];

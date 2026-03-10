@@ -194,7 +194,7 @@ class ShopService {
 
     const updatedShop = await Shop.findByIdAndUpdate(
       shopId,
-      { $set: { ...data, slug: newSlug } }, // update qismi - bu yerda $or ISHLATILMAYDI!
+      { $set: { ...data, slug: newSlug } }, 
       {
         new: true,
         runValidators: true,
