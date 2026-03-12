@@ -247,9 +247,6 @@ class OrderService {
       data: orderObj,
     };
   }
-
-  // get order statistics
-  async getOrdersStats() {}
   // update order to paid
   async updateOrderToPaid(orderId, data, lang) {
     const order = await Order.findById(orderId);
@@ -262,8 +259,8 @@ class OrderService {
     order.paidAt = Date.now();
     order.paymentResult = {
       id: data.id || `PAY_${Date.now()}`,
-      status: data.status || "completed",
-      update_time: data.update_time || new Date().toISOString(),
+      status: "completed",
+      update_time: new Date().toISOString(),
       email_address: data.email_address || req.user.email,
     };
 
@@ -339,7 +336,7 @@ class OrderService {
       throw BaseError.Conflict(null, lang);
     }
 
-    order.status = status;
+    order.orderStatus = status;
     if (status === "delivered") {
       ((order.isDelivered = true), (order.deliveredAt = Date.now()));
     }

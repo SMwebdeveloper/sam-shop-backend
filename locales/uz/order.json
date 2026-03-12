@@ -15,5 +15,8 @@
   "is_paid": "To'langanlik haqidagi qator kiritilishi kerak",
   "order_status": "Buyurtma statusi kiritilishi majburiy",
   "reason": "Sabab kiritilishi majburiy",
-  "return_status": "Qaytarilingan buyurtmani statusini kiritish majburiy"
+  "return_status": "Qaytarilingan buyurtmani statusini kiritish majburiy",
+  "payment_id": "Buyurtma identifikatori talab qilinadi",
+  "payment_email": "Email kiritish majburiy",
+  "payment_email_invalid": "Email noto'g'ri formatda"
 }

@@ -19,7 +19,6 @@ const validationMiddleware = (moduleName) => {
     if (moduleValidations[validationKey]) {
       const locale = req.lang;
       const validations = moduleValidations[validationKey](locale);
-      console.log(validationKey);
       // Validation chain'ni ishga tushirish
       Promise.all(validations.map((validation) => validation.run(req)))
         .then(() => next())

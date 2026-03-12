@@ -29,6 +29,38 @@ const orderValidations = {
       body("orderStatus").notEmpty().withMessage("order_status"),
     ];
   },
+  pay: (locale) => {
+    const t = i18n(locale, "order");
+
+    return [
+      body("paymentResult.id").notEmpty().withMessage(t("payment_id")),
+      body("paymentResult.email_address")
+        .notEmpty()
+        .withMessage(t("payment_email"))
+        .bail()
+        .isEmail()
+        .withMessage(t("payment_email_invalid")),
+    ];
+  },
+  status: (locale) => {
+    const t = i18n(locale, "order");
+
+    return [body("status").notEmpty().withMessage(t("order_status"))];
+  },
+  return: (locale) => {
+    const t = i18n(locale, "order");
+
+    return [
+      body("reason").notEmpty().withMessage(t("reason")),
+      body("product").notEmpty().withMessage(t("product_required")),
+      body("quantity").notEmpty().withMessage(t("quantity_required")),
+    ];
+  },
+  returnStatus: (locale) => {
+    const t = i18n(locale, "order");
+
+    return [body("status").notEmpty().withMessage(t("order_status"))];
+  },
 };
 
 module.exports = orderValidations

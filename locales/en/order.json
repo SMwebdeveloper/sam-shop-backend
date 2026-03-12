@@ -15,5 +15,8 @@
   "is_paid": "A payment line must be included.",
   "order_status": "Order status entry is required.",
   "reason": "Reason is required",
-  "return_status": "It is mandatory to enter the status of the returned order"
+  "return_status": "It is mandatory to enter the status of the returned order",
+  "payment_id": "Id is required",
+  "payment_email": "Email is required",
+  "payment_email_invalid": "Invalid email format"
 }
