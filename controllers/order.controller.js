@@ -105,6 +105,17 @@ class OrderController {
     }
   }
 
+  // async get seller orders
+  async getSellerOrders (req, res, next) {
+    try {
+      const sellerId = req.user.id
+      const query = req.query
+      const response = await orderService.getSellerOrders(sellerId, query, req.lang)
+      return res.status(200).json(response)
+    } catch(error) {
+      next(error)
+    }
+  }
   // update order to paid
   async updateOrderToPaid(req, res, next) {
     try {

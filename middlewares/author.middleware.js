@@ -1,5 +1,8 @@
 const BaseError = require("../errors/base.error");
-const { Product } = require("../models/product/product.model");
+const mongoose = require("mongoose")
+
+const Product = mongoose.model("Product")
+const Shop = mongoose.model("Shop")
 
 module.exports = async function (req, res, next) {
   try {

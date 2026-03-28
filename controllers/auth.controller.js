@@ -17,17 +17,12 @@ class AuthControl {
   }
   async verifyEmail(req, res, next) {
     try {
-      const errors = validationResult(req);
       const { email, otp } = req.body;
-
-      if (!errors.isEmpty()) {
-        return;
-      }
       const response = await mailService.verifyOtp(email, otp);
       if (response) {
         const user = await userModel.findOneAndUpdate(
           { email },
-          { isVerifiyed: true }
+          { isVerifiyed: true },
         );
         res.status(200).json({ user });
       }

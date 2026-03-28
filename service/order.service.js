@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const Order = mongoose.model("Order");
 const Product = mongoose.model("Product");
+const Shop = mongoose.model("Shop");
 const BaseError = require("../errors/base.error");
 class OrderService {
   // create order
@@ -219,7 +220,137 @@ class OrderService {
     };
   }
 
-  // get single order jenson buttonby product
+  // get seller orders
+  async getSellerOrders(sellerId, options, lang) {
+    const shops = await Shop.find({ owner: sellerId }).select("_id name slug");
+
+    if (!shops.length) {
+      return {
+        success: true,
+        data: [],
+        message: "Sizning hech qanday do'koningiz yo'q",
+        shops: [],
+      };
+    }
+    const shopIds = shops.map((shop) => shop.id);
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      paymentMethod,
+      startDate,
+      endDate,
+      shopId,
+      sortBy = "created",
+      sortOrder = -1,
+    } = options;
+
+    let query = { "orderItems.shop": { $in: shopIds } };
+
+    if (shopId && shopIds.includes(shopId)) {
+      query = { "orderItems.shop": shopId };
+    }
+
+    if (status) {
+      query.orderStatus = status;
+    }
+
+    if (paymentMethod) {
+      query.paymentMethod = paymentMethod;
+    }
+
+    if (startDate || endDate) {
+      query.createdAt = {};
+
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$gte = new Date(endtDate);
+    }
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const sort = {};
+    sort[sortBy] = sortOrder;
+
+    const orders = await Order.find(query)
+      .sort(sort)
+      .limit(parseInt(limit))
+      .skip(skip)
+      .populate("user", "id email username")
+      .populate("orderItems.product", "name image price id slug")
+      .populate("orderItems.shop", "id name contact slug")
+      .lean({virtuals: true, getters: true})
+    
+    const total = await Order.countDocuments(query)
+
+      const shopStats = shops.map((shop) => {
+        const shopOrders = orders.filter((order) =>
+          order.orderItems.some(
+            (item) => item.shop._id.toString() === shop._id.toString(),
+          ),
+        );
+
+        return {
+          shopId: shop._id,
+          shopName: shop.name,
+          orderCount: shopOrders.length,
+          totalRevenue: shopOrders.reduce((sum, order) => {
+            const shopItems = order.orderItems.filter(
+              (item) => item.shop._id.toString() === shop._id.toString(),
+            );
+            return (
+              sum +
+              shopItems.reduce(
+                (itemSum, item) => itemSum + item.price * item.quantity,
+                0,
+              )
+            );
+          }, 0),
+        };
+      });
+
+      // 9. Umumiy statistikani hisoblash
+      const totalStats = {
+        totalOrders: total,
+        totalRevenue: orders.reduce((sum, order) => sum + order.totalPrice, 0),
+        totalPaid: orders
+          .filter((o) => o.isPaid)
+          .reduce((sum, o) => sum + o.totalPrice, 0),
+        totalPending: orders
+          .filter((o) => !o.isPaid)
+          .reduce((sum, o) => sum + o.totalPrice, 0),
+        totalDelivered: orders.filter((o) => o.isDelivered).length,
+        totalCancelled: orders.filter((o) => o.orderStatus === "cancelled")
+          .length,
+        paymentMethods: {
+          cash: orders.filter((o) => o.paymentMethod === "cash").length,
+          card: orders.filter((o) => o.paymentMethod === "card").length,
+          online: orders.filter((o) => o.paymentMethod === "online").length,
+        },
+      };
+
+      return {
+        success: true,
+        data: orders.map(order => order.toJSON({lang})),
+        shops: shopStats,
+        stats: totalStats,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(total / limit),
+          totalItems: total,
+          itemsPerPage: parseInt(limit),
+          hasNextPage: skip + orders.length < total,
+          hasPrevPage: page > 1,
+        },
+        filters: {
+          applied: {
+            status: status || null,
+            paymentMethod: paymentMethod || null,
+            dateRange: startDate || endDate ? { startDate, endDate } : null,
+            shopId: shopId || null,
+          },
+        },
+      };
+  }
+  // get single order by product
   async getOrderByProdyct(orderId, productId, lang) {
     const order = await Order.findOne({
       _id: orderId,
