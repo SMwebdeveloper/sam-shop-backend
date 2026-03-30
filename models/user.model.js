@@ -1,4 +1,4 @@
-const {Schema, model} = require("mongoose")
+const { Schema, model } = require("mongoose");
 
 const UserSchema = new Schema(
   {
@@ -8,11 +8,21 @@ const UserSchema = new Schema(
     role: {
       uz: { type: String, enum: ["admin", "foydalanuvchi", "sotuvchi"] },
       ru: { type: String, enum: ["админ", "пользователь", "продавец"] },
-      en: { type: String, enum: ["admin", "user", "seller"]}
+      en: { type: String, enum: ["admin", "user", "seller"] },
     },
+    likes: [
+      {
+        product: Schema.Types.ObjectId,
+      },
+    ],
+    basket: [
+      {
+        product: Schema.Types.ObjectId,
+      },
+    ],
     isVerfiyed: { type: Boolean },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-module.exports = model("User", UserSchema)
+module.exports = model("User", UserSchema);

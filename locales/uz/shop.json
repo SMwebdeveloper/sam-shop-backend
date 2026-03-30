@@ -1,13 +1,13 @@
 {
-  "name": "Ism talab qilinadi.",
-  "name_length": "Ism uzunligi 2 dan 30 tagacha belgidan iborat bo'lishi kerak.",
-  "description": "Tavsif talab qilinadi",
-  "description_length": "Tavsif kamida 10 ta belgidan iborat bo'lishi kerak.",
-  "category": "Kategoriya talab qilinadi",
-  "owner": "Yaratuvchi talab qilinadi.",
-  "email": "Email kiritish majburiy",
+  "name_required": "Do'kon nomi kiritish majburiy",
+  "name_length": "Do'kon nomi 2-30 belgidan iborat bo'lishi kerak",
+  "description_required": "Tavsif kiritish majburiy",
+  "description_length": "Tavsif kamida 10 belgidan iborat bo'lishi kerak",
+  "category_required": "Kategoriya tanlash majburiy",
+  "owner_required": "Do'kon egasi kiritish majburiy",
+  "email_required": "Email kiritish majburiy",
   "email_invalid": "Email noto'g'ri formatda",
-  "phone": "Telefon raqami kiritilishi majburiy",
-  "phone_invalid": "Telefon raqam noto'g'ri formatda",
-  "status": "Status talab qilinadi"
+  "phone_required": "Telefon raqami kiritish majburiy",
+  "phone_invalid": "Telefon raqami noto'g'ri formatda",
+  "status_required": "Holat tanlash majburiy"
 }

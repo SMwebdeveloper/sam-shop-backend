@@ -58,7 +58,7 @@ module.exports = function (err, req, res, next) {
   return res.status(serverError.status).json({
     success: false,
     message: serverError.message,
-    errors: [],
+    errors: err,
     locale: userLocale,
   });
 };

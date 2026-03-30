@@ -1,0 +1,16 @@
+{
+  "name_required": "Mahsulot nomini kiritish majburiy",
+  "name_maxlength": "Mahsulot nomi 200 belgidan oshmasligi kerak",
+  "description_required": "Mahsulot tavsifini kiritish majburiy",
+  "description_maxlength": "Mahsulot tavsifi 5000 belgidan oshmasligi kerak",
+  "shortDescription_maxlength": "Qisqa tavsif 200 belgidan oshmasligi kerak",
+  "short_description_required": "Mahsulot qisqa tavsifini kiritish majburiy",
+  "category_main_required": "Asosiy kategoriyani tanlash majburiy",
+  "category_sub_required": "Ost kategoriyani tanlash majburiy",
+  "price_required": "Mahsulot narxini kiritish majburiy",
+  "vendor_required": "Sotuvchi ID sini kiritish majburiy",
+  "color_name_required": "Rang nomini kiritish majburiy",
+  "color_hexCode_required": "Rang kodini kiritish majburiy",
+  "size_value_required": "O'lcham qiymatini kiritish majburiy",
+  "image_url_required": "Rasm URL manzilini kiritish majburiy"
+}

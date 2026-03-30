@@ -1,13 +1,13 @@
 {
-    "name": "Name is required",
-    "name_length": "Name must be 2-30 characters long",
-    "description": "Description is required",
-    "description_length": "Description must be minimum 10 characters long",
-    "category": "Category is required",
-    "owner": "Owner is required",
-    "email": "Email is required",
-    "email_invalid": "Email is invalid",
-    "phone": "Phone number is required.",
-    "phone_invalid": "The phone number is in the wrong format.",
-    "status": "Status is required"
+  "name_required": "Shop name is required",
+  "name_length": "Shop name must be 2-30 characters long",
+  "description_required": "Description is required",
+  "description_length": "Description must be at least 10 characters long",
+  "category_required": "Category is required",
+  "owner_required": "Shop owner is required",
+  "email_required": "Email is required",
+  "email_invalid": "Invalid email format",
+  "phone_required": "Phone number is required",
+  "phone_invalid": "Invalid phone number format",
+  "status_required": "Status is required"
 }

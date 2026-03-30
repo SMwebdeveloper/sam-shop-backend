@@ -1,0 +1,16 @@
+{
+  "name_required": "Введите название товара",
+  "name_maxlength": "Название товара не должно превышать 200 символов",
+  "description_required": "Введите описание товара",
+  "description_maxlength": "Описание товара не должно превышать 5000 символов",
+  "shortDescription_maxlength": "Краткое описание не должно превышать 200 символов",
+  "short_description_required": "Требуется краткое описание товара.",
+  "category_main_required": "Выберите основную категорию",
+  "category_sub_required": "Выберите подкатегорию",
+  "price_required": "Введите цену товара",
+  "vendor_required": "Введите ID продавца",
+  "color_name_required": "Введите название цвета",
+  "color_hexCode_required": "Введите код цвета",
+  "size_value_required": "Введите значение размера",
+  "image_url_required": "Введите URL изображения"
+}
