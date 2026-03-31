@@ -4,7 +4,7 @@
   "description_required": "Mahsulot tavsifini kiritish majburiy",
   "description_maxlength": "Mahsulot tavsifi 5000 belgidan oshmasligi kerak",
   "shortDescription_maxlength": "Qisqa tavsif 200 belgidan oshmasligi kerak",
-  "short_description_required": "Mahsulot qisqa tavsifini kiritish majburiy",
+  "shortDescription_required": "Mahsulot qisqa tavsifini kiritish majburiy",
   "category_main_required": "Asosiy kategoriyani tanlash majburiy",
   "category_sub_required": "Ost kategoriyani tanlash majburiy",
   "price_required": "Mahsulot narxini kiritish majburiy",

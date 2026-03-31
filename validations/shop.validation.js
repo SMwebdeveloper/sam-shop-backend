@@ -138,7 +138,7 @@ const shopValidations = {
 
           // Har bir til uchun uzunlikni tekshirish
           for (const lang of requiredLangs) {
-            if (value[lang].length < 10 || value[lang].length > 300) {
+            if (value[lang].length < 10 || value[lang].length > 5000) {
               throw new Error(t("description_length"));
             }
           }

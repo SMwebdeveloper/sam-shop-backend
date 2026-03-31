@@ -4,7 +4,7 @@
   "description_required": "Введите описание товара",
   "description_maxlength": "Описание товара не должно превышать 5000 символов",
   "shortDescription_maxlength": "Краткое описание не должно превышать 200 символов",
-  "short_description_required": "Требуется краткое описание товара.",
+  "shortDescription_required": "Требуется краткое описание товара.",
   "category_main_required": "Выберите основную категорию",
   "category_sub_required": "Выберите подкатегорию",
   "price_required": "Введите цену товара",

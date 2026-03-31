@@ -4,7 +4,7 @@
   "description_required": "Product description is required",
   "description_maxlength": "Product description cannot exceed 5000 characters",
   "shortDescription_maxlength": "Short description cannot exceed 200 characters",
-  "short_description_required": "Product short description is required",
+  "shortDescription_required": "Product short description is required",
   "category_main_required": "Main category is required",
   "category_sub_required": "Sub category is required",
   "price_required": "Product price is required",
