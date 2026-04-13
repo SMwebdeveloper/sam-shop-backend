@@ -53,6 +53,18 @@ const HomeProductSchema = new Schema({
     duration: Number, // oyda
     details: String,
   },
+},
+{
+  toJSON: {
+    virtuals: true,
+    transform: (doc, rec, options) => {
+      const lang = options.lang || "uz"
+
+      if(rec?.attributes.material) rec.attributes.material = rec.attributes.material[lang]
+      if(rec?.attributes.color) rec.attributes.color = rec.attributes.color[lang] 
+      if(rec?.attributes.roomType) rec.attributes.roomType = rec.attributes.roomType[lang]
+    }
+  }
 });
 const HomeProduct = Product.discriminator("HomeProduct", HomeProductSchema);
 

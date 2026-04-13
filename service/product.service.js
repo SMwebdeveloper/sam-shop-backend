@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const localizeProduct = require("../utils/localizeProduct");
 const BaseError = require("../errors/base.error");
 const { generateUniqueSlug } = require("../utils/slugify");
 
@@ -123,11 +122,6 @@ class ProductService {
         .limit(limit)
         .populate("vendor", "name email") // Vendor ma'lumotlarini populate qilish
         .exec();
-
-      // Mahalliylashtirish
-      const localizedProducts = products.map((product) =>
-        localizeProduct(product, language),
-      );
       // Umumiy productlar sonitotalPages
       const totalProducts = await Product.countDocuments(filter);
 
@@ -146,7 +140,7 @@ class ProductService {
 
       return {
         success: true,
-        data: localizedProducts,
+        data: products.map(product => product.toJSON({language})),
         pagination,
       };
     } catch (error) {
@@ -195,7 +189,7 @@ class ProductService {
     const hasPrevPage = page > 1;
     return {
       success: true,
-      data: products,
+      data: products.map(product => product.toJSON({lang})),
       pagination: {
         page: parseInt(page),
         limit: limitNum,

@@ -249,7 +249,25 @@ const ProductSchema = new Schema(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: (doc, rec, options) => {
+        const lang = options.lang || "uz";
+        if (rec?.name) rec.name = rec.name[lang];
+        if (rec?.description) rec.description = rec.description[lang];
+        if (rec?.shortDescription)
+          rec.shortDescription = rec.shortDescription[lang];
+        if (rec?.categories.main)
+          rec.categories.main = rec.categories.main[lang];
+        if (rec?.categories.sub) rec.categories.sub = rec.categories.sub[lang];
+        if (rec?.inventory.variants) {
+          rec.inventory.variants = rec.inventory.variants.map((item) => ({
+            ...item,
+            color: { ...item.color, name: item.color.name[lant] },
+          }));
+        }
+      },
+    },
     toObject: { virtuals: true },
   },
 );

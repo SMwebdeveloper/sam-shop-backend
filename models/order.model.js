@@ -131,10 +131,10 @@ const orderSchema = new Schema(
   toJSON: {
     transform: (doc, ret, options) => {
       const lang = options.lang || "uz";
-      if(ret.product.name){
+      if(ret?.product.name){
         ret.product.name = ret.product.name[lang] || ret.product.name['uz']
       }
-      if(ret.shop.name) {
+      if(ret?.shop.name) {
         ret.shop.name = ret.shop.name[lang] || ret.shop.name['uz']
       }
       return ret
