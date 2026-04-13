@@ -78,7 +78,8 @@ const ProductSchema = new Schema(
           required: true,
           validate: {
             validator: function (v) {
-              return subCategories.uz[this.categories.main.uz].includes(v);
+              const subCats = subCategories.uz[this.categories.main.uz];
+              return !subCats || subCats.length === 0 || subCats.inlcudes(v);
             },
           },
         },
@@ -87,7 +88,8 @@ const ProductSchema = new Schema(
           required: true,
           validate: {
             validator: function (v) {
-              return subCategories.ru[this.categories.main.ru].includes(v);
+              const subCats = subCategories.ru[this.categories.main.ru];
+              return !subCats || subCats.length === 0 || subCats.inlcudes(v);
             },
           },
         },
@@ -96,7 +98,8 @@ const ProductSchema = new Schema(
           required: true,
           validate: {
             validator: function (v) {
-              return subCategories.en[this.categories.main.en].includes(v);
+              const subCats = subCategories.en[this.categories.main.en];
+              return !subCats || subCats.length === 0 || subCats.inlcudes(v);
             },
           },
         },
@@ -212,9 +215,7 @@ const ProductSchema = new Schema(
 
     // Brend va sotuvchi
     brand: {
-      uz: { type: String },
-      ru: { type: String },
-      en: { type: String },
+      type: String,
     },
     manufacturer: { type: String },
     vendor: {
@@ -325,7 +326,7 @@ ProductSchema.pre(
   },
 );
 
-ProductSchema.static.updateShopStats = async (shopId) => {
+ProductSchema.statics.updateShopStats = async (shopId) => {
   if (shopId) return;
 
   const stats = await this.aggregate([

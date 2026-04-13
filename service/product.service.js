@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 const localizeProduct = require("../utils/localizeProduct");
 const BaseError = require("../errors/base.error");
@@ -151,10 +150,63 @@ class ProductService {
         pagination,
       };
     } catch (error) {
-      throw new Error(`Productlarni olishda xatolik: ${error.message}`);
+      console.log(error);
+      // throw new Error(`Productlarni olishda xatolik: ${error.message}`);
     }
   }
+  async getProductsByShop(shopId, options, lang) {
+    const { page = 1, limit = 10, brand, status, minPrice, maxPrice } = options;
 
+    // filter variables
+    const filter = { vendor: shopId };
+
+    // status filter
+    if (status) filter.status = status;
+
+    // brand filter
+    if (brand) filter.brand = { $regex: new RegExp(brand, "i") };
+
+    // price filter
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      filter["price.amount"] = {};
+
+      if (minPrice !== undefined && !isNaN(parseFloat(minPrice))) {
+        filter["price.amount"].$gte = parseFloat(minPrice);
+      }
+
+      if (maxPrice !== undefined && !isNaN(parseFloat(maxPrice))) {
+        filter["price.amount"].$lte = parseFloat(maxPrice);
+      }
+    }
+
+    // sort
+    // const sort = ;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const count = await Product.countDocuments(filter);
+    const limitNum = parseInt(limit);
+    const products = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .populate("vendor", "email name");
+
+    const totalPages = Math.ceil(count / limitNum);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+    return {
+      success: true,
+      data: products,
+      pagination: {
+        page: parseInt(page),
+        limit: limitNum,
+        total: count,
+        skip: skip,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      },
+    };
+  }
   async createProduct(data) {
     const slug = await generateUniqueSlug(Product, data.name.en);
 

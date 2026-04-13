@@ -110,16 +110,21 @@ const shopSchema = new Schema(
       virtuals: true,
       transform: (doc, ret, options) => {
         const lang = options.lang || "uz";
-        if (ret.name) ret.name = ret.name[lang] || ret.name["uz"];
-        if (ret.description)
+        if (ret?.name) ret.name = ret.name[lang] || ret.name["uz"];
+        if (ret?.description)
           ret.description = ret.description[lang] || ret.description["uz"];
-        if (ret.contact.address)
+        if (ret.contact?.address)
           ret.contact.address = ret.address[lang] || red.address["uz"];
-        if(ret.category.name) ret.category.name = ret.category[lang] || ret.category.name['uz']
-        if(ret.meta.title) ret.meta.title = ret.meta.title[lang] || ret.meta.title['uz']
-        if(ret.meta.description) ret.meta.description = ret.meta.description[lang] || ret.meta.description['uz']
-        if (ret.meta.keywords)
-          ret.meta.keywords = ret.meta.keywords[lang] || ret.meta.keywords["uz"];
+        if (ret.category?.name)
+          ret.category.name = ret.category[lang] || ret.category.name["uz"];
+        if (ret.meta?.title)
+          ret.meta.title = ret.meta.title[lang] || ret.meta.title["uz"];
+        if (ret.meta?.description)
+          ret.meta.description =
+            ret.meta?.description[lang] || ret.meta.description["uz"];
+        if (ret.meta?.keywords)
+          ret.meta.keywords =
+            ret.meta.keywords[lang] || ret.meta.keywords["uz"];
         return ret;
       },
     },
@@ -143,9 +148,9 @@ shopSchema.methods.close = function () {
 
 // suspend shop
 shopSchema.methods.suspend = function () {
-  this.status = 'suspend'
-  return this.save()
-}
+  this.status = "suspend";
+  return this.save();
+};
 // ========= Virtual fielads =========
 shopSchema.virtual("mainName").get(function () {
   return this.name?.uz || this.name?.ru || this.name?.en || "No name";

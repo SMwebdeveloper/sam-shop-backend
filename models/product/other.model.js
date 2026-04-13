@@ -17,21 +17,14 @@ const OthersProductSchema = new Schema({
         enum: ["plastic", "metal", "wood", "paper", "other"],
       },
     },
-    color: {
-      name: {
-        uz: { type: String },
-        ru: { type: String },
-        en: { type: String },
-      },
-      hexCode: { type: String },
-    },
-    brandCountry: {
-      uz: { type: String },
-      ru: { type: String },
-      en: { type: String },
+    weight: {
+      type: Number,
+
     },
     warranty: {
-      duration: Number, // oylar
+      duration: {
+        type: Number
+      }, // oylar
       description: {
         uz: { type: String },
         ru: { type: String },

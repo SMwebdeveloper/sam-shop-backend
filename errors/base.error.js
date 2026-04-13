@@ -33,7 +33,7 @@ module.exports = class BaseError extends Error {
       en: resource ? `${resource} not found` : "Data not found",
     };
 
-    return new BaseError(404, messages[locale], [], locale);
+    return new BaseError(404, messages[locale], this.errors, locale);
   }
 
   static Forbiden(locale = "uz") {

@@ -3,20 +3,33 @@ const productService = require("../service/product.service");
 class ProductController {
   async getAllProducts(req, res, next) {
     try {
-    const products = await productService.getAllProducts(req.query, req.lang);
+      const products = await productService.getAllProducts(req.query, req.lang);
       res.status(200).json(products);
     } catch (error) {
       next(error);
     }
   }
-  
+
+  async getProductsByShop(req, res, next) {
+    try {
+      const { shopId } = req.params;
+      const response = await productService.getProductsByShop(
+        shopId,
+        req.query,
+        req.lang,
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
   async create(req, res, next) {
     try {
       const productData = req.body;
-      const newProduct = await productService.createProduct(
-        productData
-      );
-    return res.status(201).json(newProduct);
+      const newProduct = await productService.createProduct(productData);
+      return res.status(201).json(newProduct);
     } catch (error) {
       next(error);
     }
@@ -54,10 +67,10 @@ class ProductController {
 
   async addProductRating(req, res, next) {
     try {
-      const {userId, rating } = req.body;
-      const {id} = req.params
+      const { userId, rating } = req.body;
+      const { id } = req.params;
       await productService.addRating(id, userId, rating);
-      res.status(201).json({success: true});
+      res.status(201).json({ success: true });
     } catch (error) {
       next(error);
     }

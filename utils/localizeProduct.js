@@ -32,7 +32,7 @@ const localizeProduct = (product, lang = "uz") => {
       localized.attributes = localizeBeautyProduct(product, lang);
       localized.usageInstructions = localizeBeautyProduct(
         product,
-        lang
+        lang,
       ).usageInstructions;
       break;
     case "ElectronicsProduct":
@@ -55,7 +55,7 @@ const localizeProduct = (product, lang = "uz") => {
       break;
 
     default:
-        localized.attributes = product.attributes;
+      localized.attributes = product.attributes;
       break;
   }
 
@@ -154,12 +154,8 @@ function localizeOtherProduct(product, lang = "uz") {
       brandCountry:
         product.attributes?.brandCountry?.[lang] ||
         product.attributes?.brandCountry?.uz,
-      warranty: {
-        duration,
-      },
     },
   };
 }
 
-
-module.exports = localizeProduct
+module.exports = localizeProduct;

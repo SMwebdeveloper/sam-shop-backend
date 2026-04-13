@@ -6,18 +6,19 @@ const router = express.Router();
 
 router.get("/", productController.getAllProducts);
 router.get("/:id", productController.getById);
+router.get("/shop-product/:shopId", productController.getProductsByShop);
 router.post("/add", authMiddleware, productController.create);
 router.put(
   "/update/:id",
   authMiddleware,
   authorMiddleware,
-  productController.update
+  productController.update,
 );
 router.delete(
   "/delete/:id",
   authMiddleware,
   authorMiddleware,
-  productController.delete
+  productController.delete,
 );
 router.post("/:id/ratings", authMiddleware, productController.addProductRating);
 
