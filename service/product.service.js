@@ -140,7 +140,7 @@ class ProductService {
 
       return {
         success: true,
-        data: products.map(product => product.toJSON({language})),
+        data: products.map((product) => product.toJSON({ language })),
         pagination,
       };
     } catch (error) {
@@ -189,7 +189,7 @@ class ProductService {
     const hasPrevPage = page > 1;
     return {
       success: true,
-      data: products.map(product => product.toJSON({lang})),
+      data: products.map((product) => product.toJSON({ lang })),
       pagination: {
         page: parseInt(page),
         limit: limitNum,
@@ -294,6 +294,150 @@ class ProductService {
     // Faqat averageRating ni yangilash
     await Product.updateOne({ _id: productId }, { $set: { averageRating } });
     return true;
+  }
+
+  async addDiscountProduct(productId, shopId, discountData, lang) {
+    const { type, value, startDate, endDate } = discountData;
+
+    if ((type === "percentage" && value < 0) || value > 100) {
+      return {
+        success: false,
+        message: "Percentage discount must be between 0 and 100",
+      };
+    }
+    if (type === "amount" && value < 0) {
+      return {
+        success: false,
+        message: "Amount discount  must be greater than 0",
+      };
+    }
+
+    const discount = {
+      type,
+      value,
+      startDate: startDate || null,
+      endDate: endDate || null,
+      isActive: true,
+    };
+
+    const product = await Product.findOneAndUpdate(
+      { _id: productId, vendor: shopId },
+      { $set: { "price.discount": discount } },
+      { new: true },
+    );
+
+    if (!product) {
+      throw BaseError.NotFound("Product", lang);
+    }
+
+    const successMessages = {
+      uz: "Chegirmalar muvaffaqiyatli qo'shildi",
+      ru: "Скидки успешно добавлены.",
+      en: "Discounts added successfully",
+    };
+    return {
+      success: true,
+      message: successMessages[lang],
+      data: product,
+    };
+  }
+
+  async addDiscountToMultipleProducts(productIds, shopId, discountData, lang) {
+    const { type, value, startDate, endDate } = discountData;
+
+    if ((type === "percentage" && value < 0) || value > 100) {
+      return {
+        success: false,
+        message: "Percentage discount must be between 0 and 100",
+      };
+    }
+    if (type === "amount" && value < 0) {
+      return {
+        success: false,
+        message: "Amount discount  must be greater than 0",
+      };
+    }
+
+    const discount = {
+      type: type,
+      value: value,
+      startDate: startDate || null,
+      endDate: endDate || null,
+      isActive: true,
+    };
+
+    const results = await Product.updateMany(
+      {
+        _id: { $in: productIds },
+        vendor: shopId,
+      },
+      {
+        $set: { "price.amount": discount },
+      },
+    );
+    const successMessages = {
+      uz: "Chegirmalar muvaffaqiyatli qo'shildi",
+      ru: "Скидки успешно добавлены.",
+      en: "Discounts added successfully",
+    };
+    return {
+      success: true,
+      message: successMessages[lang],
+      data: results,
+    };
+  }
+
+  async removeDiscountProduct(productId, shopId, lang) {
+    const product = await Product.findOneAndUpdate(
+      { _id: productId, vendor: shopId },
+      {
+        $set: {
+          "price.discount.type": null,
+          "price.discount.value": 0,
+          "price.discount.startDate": null,
+          "price.discount.endDate": null,
+          "price.discount.isActive": false,
+        },
+      },
+    );
+
+    if (!product) {
+      throw BaseError.NotFound(null, lang);
+    }
+    const resultMessages = {
+      uz: "Chegirma muvaffaqiyatli olib tashlandi",
+      ru: "Скидка успешно удалена",
+      en: "Discount successfully removed",
+    };
+    return {
+      success: true,
+      message: resultMessages[lang],
+      data: product,
+    };
+  }
+
+  async extendDiscountExpiry(productId, shopId, newEndDate, lang) {
+    const product = await Product.findOneAndUpdate(
+      { _id: productId, vendor: shopId },
+      { $set: { "price.discount.endDate": newEndDate } },
+      { new: true },
+    );
+
+    if (!product) {
+      throw BaseError.NotFound(null, lang);
+    }
+
+    const resultMessages = {
+      uz: "Chegirmaning amal qilish muddati muvaffaqiyatli o'zgartirildi.",
+      ru: "Срок действия скидки успешно изменен.",
+      en: "The discount expiration date has been successfully changed.",
+    };
+
+    return {
+      success: true,
+      message: resultMessages[lang],
+      data: product,
+    };
   }
 }
 

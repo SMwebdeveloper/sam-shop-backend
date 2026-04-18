@@ -22,4 +22,10 @@ router.delete(
 );
 router.post("/:id/ratings", authMiddleware, productController.addProductRating);
 
+// discount route
+router.post('/discount/:productId/:shopId', productController.addDiscountProduct)
+router.delete('/discount-remove/:productId', productController.removeDiscountProduct)
+router.post('/discounts/bulk', productController.addDiscountToMultipleProducts)
+router.put('/discount/extends/:productId/:shopId', productController.extendDiscountExpiry)
+
 module.exports = router;

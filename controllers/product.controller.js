@@ -75,6 +75,64 @@ class ProductController {
       next(error);
     }
   }
+
+  async addDiscountProduct(req, res, next) {
+    try {
+      const { productId, shopId } = req.params;
+      const response = await productService.addDiscountProduct(
+        productId,
+        shopId,
+        req.body,
+        req.lang,
+      );
+      return res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async addDiscountToMultipleProducts(req, res, next) {
+    try {
+      const { productsId, shopId, discountData } = req.body;
+      const response = await productService.addDiscountToMultipleProducts(
+        productsId,
+        shopId,
+        discountData,
+        req.lang,
+      );
+      return res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async removeDiscountProduct(req, res, next) {
+    try {
+      const { productId, shopId } = req.params;
+      const response = await productService.removeDiscountProduct(
+        productId,
+        shopId,
+        req.lang,
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async extendDiscountExpiry(req, res, next) {
+    try {
+      const { productId, shopId } = req.params;
+      const response = await productService.extendDiscountExpiry(
+        productId,
+        shopId,
+        req.body,
+        req.lang,
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 module.exports = new ProductController();
